@@ -180,8 +180,8 @@
       "name": "Склад",
       "base_cost": 900,
       "cost_growth": 1.7,
-      "max_level": 6,
-      "effect": "+2 открытые клетки поля за уровень",
+      "max_level": 7,
+      "effect": "+2 открытые клетки поля за уровень, на макс. открывает всё поле",
       "effect_params": {
         "cells_per_level": 2
       }
@@ -219,5 +219,141 @@
     "share_of_active": 0.05,
     "cap_hours": 4,
     "note": "Копилка прилавка между сессиями. Не основа дохода, а подарок за возвращение."
-  }
+  },
+  "reputation": {
+    "per_order_base": 1,
+    "per_level_bonus": 0.2,
+    "per_item_bonus": 0.1,
+    "stale_penalty": 0.5,
+    "note": "Вторая валюта — репутация квартала. Даётся за заказы, тратится на декор. Уровень предмета в заказе даёт бонус."
+  },
+  "herbarium": {
+    "bonus_per_new_species": 0.005,
+    "bonus_per_chain_complete": 0.03,
+    "bonus_max": 0.25,
+    "note": "Гербарий — коллекция открытых видов. Каждый новый вид даёт +0.5% к доходу, закрытая цепочка +3%, макс +25%. Долгосрочный мотив дособирать."
+  },
+  "decor": [
+    {
+      "id": "bench",
+      "name": "Скамейка",
+      "description": "Уютная скамейка у входа — посетители задерживаются дольше",
+      "base_cost": 15,
+      "cost_growth": 1.6,
+      "max_level": 5,
+      "cost_currency": "reputation",
+      "effect": "+2% к доходу за уровень",
+      "bonus_per_level": 0.02
+    },
+    {
+      "id": "lantern",
+      "name": "Фонарь",
+      "description": "Тёплый свет фонаря — квартал виден издалека",
+      "base_cost": 25,
+      "cost_growth": 1.7,
+      "max_level": 5,
+      "cost_currency": "reputation",
+      "effect": "+3 к капу энергии за уровень",
+      "bonus_per_level": 3
+    },
+    {
+      "id": "flowerbed",
+      "name": "Клумба",
+      "description": "Клумба с сезонными цветами — радует глаз",
+      "base_cost": 40,
+      "cost_growth": 1.8,
+      "max_level": 5,
+      "cost_currency": "reputation",
+      "effect": "+1% шанс редкого предмета за уровень",
+      "bonus_per_level": 0.01
+    },
+    {
+      "id": "sign",
+      "name": "Вывеска",
+      "description": "Красивая вывеска — больше прохожих заходят",
+      "base_cost": 60,
+      "cost_growth": 1.8,
+      "max_level": 3,
+      "cost_currency": "reputation",
+      "effect": "+5% к репутации за заказы",
+      "bonus_per_level": 0.05
+    },
+    {
+      "id": "fountain",
+      "name": "Фонтан",
+      "description": "Маленький фонтан на площади — сердце квартала",
+      "base_cost": 100,
+      "cost_growth": 2.0,
+      "max_level": 1,
+      "cost_currency": "reputation",
+      "effect": "+10% к пассивному доходу",
+      "bonus_per_level": 0.1
+    },
+    {
+      "id": "birdhouse",
+      "name": "Скворечник",
+      "description": "Птицы поселились в квартале — их пение слышно утром",
+      "base_cost": 30,
+      "cost_growth": 1.6,
+      "max_level": 3,
+      "cost_currency": "reputation",
+      "effect": "+2 энергии в день за уровень",
+      "bonus_per_level": 2
+    },
+    {
+      "id": "windchime",
+      "name": "Музыка ветра",
+      "description": "Бамбуковые колокольчики — ветер играет мелодию",
+      "base_cost": 45,
+      "cost_growth": 1.7,
+      "max_level": 3,
+      "cost_currency": "reputation",
+      "effect": "+3% к шансу 5-мерджа за уровень",
+      "bonus_per_level": 0.03
+    },
+    {
+      "id": "gnome",
+      "name": "Садовый гном",
+      "description": "Маленький сторож грядок — приносит удачу",
+      "base_cost": 55,
+      "cost_growth": 1.8,
+      "max_level": 1,
+      "cost_currency": "reputation",
+      "effect": "+5% к стоимости продажи",
+      "bonus_per_level": 0.05
+    },
+    {
+      "id": "butterfly",
+      "name": "Кормушка для бабочек",
+      "description": "Бабочки кружат над цветами — квартал оживает",
+      "base_cost": 70,
+      "cost_growth": 1.9,
+      "max_level": 3,
+      "cost_currency": "reputation",
+      "effect": "+1 к репутации за редкий цветок",
+      "bonus_per_level": 1
+    },
+    {
+      "id": "hammock",
+      "name": "Гамак",
+      "description": "Уютный гамак между яблонями — место для отдыха",
+      "base_cost": 85,
+      "cost_growth": 2.0,
+      "max_level": 2,
+      "cost_currency": "reputation",
+      "effect": "+5 к капу энергии за уровень",
+      "bonus_per_level": 5
+    },
+    {
+      "id": "cat",
+      "name": "Котик квартала",
+      "description": "Рыжий кот греется на солнце — все его любят",
+      "base_cost": 120,
+      "cost_growth": 2.2,
+      "max_level": 1,
+      "cost_currency": "reputation",
+      "effect": "+15% к доходу, +мурчание на фоне",
+      "bonus_per_level": 0.15
+    }
+  ]
 }

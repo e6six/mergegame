@@ -46,7 +46,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // --------------------------------------------------------- отладочная панель
-// Нужна, чтобы проверять механику не дожидаясь реальных дней прогресса.
+// Всегда показываем пока идёт разработка, уберём по команде пользователя
 const dev = document.createElement('div');
 dev.className = 'dev';
 dev.append(Object.assign(document.createElement('div'), { textContent: `Отладка · спрайтов ${spriteCount}` }));
@@ -68,6 +68,9 @@ row1.append(
   }),
   devRow('+100 энергии', () => {
     game.addEnergy(100);
+  }),
+  devRow('+100 репутации', () => {
+    game.reputation += 100;
   }),
 );
 const row2 = document.createElement('div');

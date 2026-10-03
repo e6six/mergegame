@@ -537,13 +537,88 @@ Isolated single round bronze badge game icon with a tiny cottage and a small flo
 
 _принят_
 
-**ui-locked** — ui-locked
+**ui-locked** — Закрытая клетка
 
 ```text
 Isolated single small locked garden plot marker: a short wooden peg with a tiny padlock and a few dry twigs, game UI icon style with clean edges, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, {PALETTE}, clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, icon fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
 ```
 
 _принят. Добавлен сверх манифеста: нужна метка закрытой клетки вместо эмодзи_
+
+**ui-sell-basket** — Корзина для продажи
+
+```text
+Isolated single empty wicker basket with an arched handle, with a few golden coins inside, cozy garden style, game UI icon, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, {PALETTE}, clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, icon fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+
+### Декор
+
+**decor-bench** — Скамейка
+
+```text
+Isolated single cozy wooden garden bench with cream cushion and small potted flowers beside it, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-lantern** — Фонарь
+
+```text
+Isolated single vintage garden lantern with warm glowing light, wrought iron frame and glass panels, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-flowerbed** — Клумба
+
+```text
+Isolated single small round flowerbed with pink and white seasonal flowers and green foliage, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-sign** — Вывеска
+
+```text
+Isolated single charming wooden shop sign with hand-painted flower and curved brackets, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-fountain** — Фонтан
+
+```text
+Isolated single small stone garden fountain with water and lily pads, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-birdhouse** — Скворечник
+
+```text
+Isolated single small wooden birdhouse on a pole with birds and green leaves, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-windchime** — Музыка ветра
+
+```text
+Isolated single bamboo wind chime with wooden tubes and small flowers, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-gnome** — Садовый гном
+
+```text
+Isolated single small garden gnome with red hat holding a watering can, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-butterfly** — Кормушка для бабочек
+
+```text
+Isolated single butterfly feeder with flowers and two colorful butterflies, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-hammock** — Гамак
+
+```text
+Isolated single cozy hammock between two wooden posts with cream fabric, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
+**decor-cat** — Котик квартала
+
+```text
+Isolated single cute orange tabby cat sleeping on a cream cushion, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
 
 
 ---

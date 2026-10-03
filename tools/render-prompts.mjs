@@ -58,6 +58,11 @@ function collectAssets() {
   for (const ui of manifest.ui) {
     out.push({ id: ui.id, group: 'Интерфейс', template: 'uiIcon', subject: ui.subject, name: ui.name, palette: 'sage green and cream palette' });
   }
+  if (manifest.decor) {
+    for (const d of manifest.decor) {
+      out.push({ id: d.id, group: 'Декор', template: 'item', subject: d.subject, name: d.name });
+    }
+  }
   return out;
 }
 

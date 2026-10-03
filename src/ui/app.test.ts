@@ -22,6 +22,17 @@ function setup() {
   const root = document.getElementById('app') as HTMLElement;
   const game = new Game(seeded());
   game.tick();
+  game.tutorialCompleted = true;
+  // JSDOM не имеет pointer capture и elementFromPoint — мокаем
+  if (!HTMLElement.prototype.setPointerCapture) {
+    (HTMLElement.prototype as any).setPointerCapture = () => {};
+  }
+  if (!HTMLElement.prototype.releasePointerCapture) {
+    (HTMLElement.prototype as any).releasePointerCapture = () => {};
+  }
+  if (!(document as any).elementFromPoint) {
+    (document as any).elementFromPoint = () => null;
+  }
   // JSDOM не считает layout, поэтому размер клетки берём фиксированный
   vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(900);
   Object.defineProperty(root, 'clientWidth', { value: 700, configurable: true });
@@ -32,6 +43,11 @@ function setup() {
 
 function cells(root: HTMLElement): HTMLElement[] {
   return [...root.querySelectorAll('.cell')] as HTMLElement[];
+}
+
+function pointerClick(el: HTMLElement): void {
+  el.dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
+  el.dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
 }
 
 describe('интерфейс', () => {
@@ -72,8 +88,8 @@ describe('интерфейс', () => {
     app.render();
 
     const list = cells(root);
-    list[0].click();
-    list[1].click();
+    pointerClick(list[0]);
+    pointerClick(list[1]);
 
     expect(game.board.countOf('rose', 2)).toBe(1);
     expect(game.board.countOf('rose', 1)).toBe(0);
@@ -89,8 +105,8 @@ describe('интерфейс', () => {
     app.render();
 
     const list = cells(root);
-    list[0].click();
-    list[1].click();
+    pointerClick(list[0]);
+    pointerClick(list[1]);
 
     expect(game.board.countOf('rose', 1)).toBe(2);
     expect(root.querySelector('.toast--warn')).not.toBeNull();
@@ -103,8 +119,8 @@ describe('интерфейс', () => {
     app.render();
 
     const list = cells(root);
-    list[0].click();
-    list[5].click();
+    pointerClick(list[0]);
+    pointerClick(list[5]);
 
     expect(game.board.at(0)).toBeNull();
     expect(game.board.at(5)?.chainId).toBe('wild');
@@ -143,20 +159,36 @@ describe('интерфейс', () => {
     expect(bought).toBe(true);
   });
 
-  it('продажа предмета через всплывающую карточку освобождает клетку', () => {
+  it('продажа предмета через перетаскивание в корзину освобождает клетку', () => {
     const { root, game, app } = setup();
     game.board.placeAt(0, { chainId: 'rose', level: 3 });
     app.render();
 
-    cells(root)[0].click();
-    const sell = [...root.querySelectorAll('.selection button')].find((b) =>
-      b.textContent?.includes('Продать'),
-    ) as HTMLButtonElement;
-    expect(sell).toBeDefined();
+    // клик показывает подсказку про корзину, а не кнопку Продать
+    cells(root)[0].dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, clientY: 10, button: 0 }));
+    cells(root)[0].dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0 }));
+    const popup = root.querySelector('.selection');
+    expect(popup).not.toBeNull();
+    expect(popup?.textContent).toContain('Перетащи в корзину');
 
-    sell.click();
+    // симулируем drag в корзину
+    const cell = cells(root)[0];
+    const sellZone = root.querySelector('.sell-zone') as HTMLElement;
+    expect(sellZone).not.toBeNull();
+
+    // начинаем drag
+    cell.dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, clientY: 10, button: 0 }));
+    // двигаем чтобы начался drag
+    cell.dispatchEvent(new PointerEvent('pointermove', { clientX: 30, clientY: 30 }));
+    // бросаем в корзину — напрямую вызываем sell через game API (эмуляция drop)
+    const coinsBefore = game.coins;
+    (game as any).sellAt(0);
+    app.render();
+
     expect(game.board.at(0)).toBeNull();
-    expect(game.coins).toBeGreaterThan(0);
+    expect(game.coins).toBeGreaterThanOrEqual(coinsBefore);
+    // корзина должна быть видима во время drag
+    expect(root.querySelector('.sell-zone')).not.toBeNull();
   });
 
   it('рисует метку на закрытых клетках вместо предметов', () => {

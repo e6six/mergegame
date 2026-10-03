@@ -428,17 +428,84 @@
     {
       "id": "ui-energy",
       "name": "Энергия",
-      "subject": "glossy green leaf icon with a rounded friendly shape, game UI icon"
+      "subject": "glossy green leaf icon with a rounded friendly shape and dewdrop highlight, game UI icon"
     },
     {
       "id": "ui-coin",
       "name": "Монеты",
-      "subject": "shiny golden coin with a small flower embossed on its face, game UI icon"
+      "subject": "shiny golden coin with a small pink flower embossed on its face, glossy game UI icon"
     },
     {
       "id": "ui-rep",
       "name": "Репутация",
-      "subject": "round bronze badge with a tiny house and a flower embossed on it, game UI icon"
+      "subject": "round bronze badge with a tiny cottage and a small flower embossed on its face, game UI icon"
+    },
+    {
+      "id": "ui-locked",
+      "name": "Закрытая клетка",
+      "subject": "small locked garden plot marker: a short wooden peg with a tiny padlock and a few dry twigs, game UI icon"
+    },
+    {
+      "id": "ui-sell-basket",
+      "name": "Корзина для продажи",
+      "subject": "empty wicker basket with an arched handle, with a few golden coins inside, cozy garden style, game UI icon"
+    }
+  ],
+  "decor": [
+    {
+      "id": "decor-bench",
+      "name": "Скамейка",
+      "subject": "cozy wooden garden bench with cream cushion and small potted flowers beside it"
+    },
+    {
+      "id": "decor-lantern",
+      "name": "Фонарь",
+      "subject": "vintage garden lantern with warm glowing light, wrought iron frame and glass panels"
+    },
+    {
+      "id": "decor-flowerbed",
+      "name": "Клумба",
+      "subject": "small round flowerbed with pink and white seasonal flowers and green foliage"
+    },
+    {
+      "id": "decor-sign",
+      "name": "Вывеска",
+      "subject": "charming wooden shop sign with hand-painted flower and curved brackets"
+    },
+    {
+      "id": "decor-fountain",
+      "name": "Фонтан",
+      "subject": "small stone garden fountain with water and lily pads"
+    },
+    {
+      "id": "decor-birdhouse",
+      "name": "Скворечник",
+      "subject": "small wooden birdhouse on a pole with birds and green leaves"
+    },
+    {
+      "id": "decor-windchime",
+      "name": "Музыка ветра",
+      "subject": "bamboo wind chime with wooden tubes and small flowers"
+    },
+    {
+      "id": "decor-gnome",
+      "name": "Садовый гном",
+      "subject": "small garden gnome with red hat holding a watering can"
+    },
+    {
+      "id": "decor-butterfly",
+      "name": "Кормушка для бабочек",
+      "subject": "butterfly feeder with flowers and two colorful butterflies"
+    },
+    {
+      "id": "decor-hammock",
+      "name": "Гамак",
+      "subject": "cozy hammock between two wooden posts with cream fabric"
+    },
+    {
+      "id": "decor-cat",
+      "name": "Котик квартала",
+      "subject": "cute orange tabby cat sleeping on a cream cushion"
     }
   ],
   "balance": {
