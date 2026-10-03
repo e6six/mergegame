@@ -1,0 +1,25 @@
+name: CI
+
+# Проверки на каждый пуш и пул-реквест: тесты, типы, сборка и валидатор
+# требований площадки (размер, относительные пути, картинки в сборке).
+on:
+  push:
+    branches: [main, 'arena/**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Тесты (включая сквозной прогон ботом)
+        run: npm test
+      - name: Сборка и проверка требований площадки
+        run: npm run build
+      - name: Замер баланса (по требованию, не блокирует)
+        run: npm run measure
