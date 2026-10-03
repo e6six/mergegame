@@ -194,14 +194,14 @@ body {
 }
 
 .board-wrap::before {
-  content: '🌸🌿🌼';
+  content: '';
   position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  letter-spacing: 8px;
-  opacity: 0.6;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, rgba(157,190,154,0.35), transparent);
+  border-radius: 0 0 6px 6px;
   pointer-events: none;
   z-index: 2;
 }
