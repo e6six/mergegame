@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Запуск питон-инструментов проекта.
+#
+# Окружение живёт в tools/venv (не в .venv: эта папка исключена из сохранения
+# рабочего пространства и пропадает между сессиями). Если окружения нет —
+# скрипт поднимает его сам, чтобы инструменты не падали после паузы.
+#
+# Использование:
+#   tools/py tools/simulate.py --days 7
+#   tools/py tools/cutout.py art/raw/*.png --outdir art/sprites
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+PY="tools/venv/bin/python"
+
+if [ ! -x "$PY" ]; then
+  echo "поднимаю окружение инструментов (tools/venv)..." >&2
+  python3 -m venv tools/venv
+  tools/venv/bin/pip install --quiet --upgrade pip
+  tools/venv/bin/pip install --quiet -r tools/requirements.txt
+  echo "готово" >&2
+fi
+
+exec "$PY" "$@"
