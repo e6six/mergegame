@@ -1,4 +1,4 @@
-# Передача работы: «Цветочный квартал» — актуально на 2026-10-03, main 229d8e6
+# Передача работы: «Цветочный квартал» — актуально на 2026-10-03, main bbaaddc
 
 Всё, что нужно, чтобы продолжить разработку другому человеку или агенту в другом чате.
 Читать целиком перед первым действием.
@@ -7,7 +7,7 @@
 
 ## 0. Первым делом: окружение и ветки
 
-**Всё в `main`, без веток** — пользователь явно попросил свести работу в `main`, не оставлять arena-ветку как основную. Сейчас `main` и `arena/01a102eb-mergegame` одинаковые (229d8e6), но работа идёт в `main`.
+**Всё в `main`, без веток** — пользователь явно попросил свести работу в `main`, не оставлять arena-ветку как основную. Сейчас `main` и `arena/01a102eb-mergegame` одинаковые (bbaaddc), но работа идёт в `main`.
 
 **`node_modules` и `tools/venv` не сохраняются.** 
 
@@ -194,6 +194,7 @@ npm run build
 - `decor-hammock` — "cozy hammock between two wooden posts with cream fabric"
 - `decor-cat` — "cute orange tabby cat sleeping on a cream cushion"
 - Промты уже в manifest.json и prompts.md, нужно только вызвать generate_image и cutout.
+- **Лимит 10 изображений за ход** — в этом чате уже сгенерировано 10 (ui-sell-basket +9 decor), попытки сгенерить hammock/cat вернули "limit 10 reached for this turn". В следующем чате лимит сбросится, можно догенерить 2 оставшихся за 1 ход.
 
 **Как добавить новый ассет в игру:**
 1. Добавить в `art/manifest.json` в соответствующий массив (ui, decor, buildings и тд) с id и subject.
@@ -252,8 +253,9 @@ npm run build
 ## 9. Журнал последних работ
 
 - **b80d903..396ad16:** board-wrap деревянная рамка #C89A63 4px, board белый градиент, cell grab, drag&drop pointer events + fly-clone, sell-zone корзина, tutorial spotlight без затемнения зоны действия, energy иконка, +100 реп в отладке, звук громче, декор без эмодзи.
-- **f4fbd21:** сгенерированы 10 новых ассетов (sell-basket +9 decor) через generate_image с референсом flowershop-keyart.png, cutout.py, 75 картинок в сборке.
-- **229d8e6:** восстановлены удалённые файлы (herbarium, tutorial, screenshots) — единая ветка main.
+- **f4fbd21:** сгенерированы 10 новых ассетов (sell-basket +9 decor) через generate_image с референсом flowershop-keyart.png, cutout.py, 75 картинок в сборке. **БАГ:** коммит удалил 28 файлов из-за partial add (tutorial, herbarium, screenshots, quarter-buildings.json) — сборка сломалась, game.ts стал SAVE_VERSION 1 без herbarium.
+- **229d8e6:** восстановлены удалённые файлы (herbarium, tutorial, screenshots) — единая ветка main, но game.ts остался упрощённым, тесты падали (effectiveEnergyCap is not a function).
+- **bbaaddc:** восстановлен полный game.ts из 396ad16 (SAVE_VERSION 3, herbarium, tutorialCompleted, decorLevels, effectiveEnergyCap), app.ts с корзиной ui-sell-basket и иконкой ui-energy, decor.ts 11 иконок, style.css без эмодзи 🌸🌿🌼, tutorial без 🌸🌿. Тесты 53 зелёных, билд 3.7MB 75 картинок, эмодзи в src нет.
 
 ---
 
