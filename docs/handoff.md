@@ -18,8 +18,39 @@ tools/setup.sh          # восстановить окружение (безо�
 tools/setup.sh --check  # только проверить, ничего не устанавливая
 ```
 
-Всё остальное — исходники, арт, документы, история git — сохраняется.
-Порядок действий при старте: **сначала `tools/setup.sh`, потом всё остальное.**
+### Если локальная история git откатилась
+
+**Файлы сохраняются, а история коммитов — нет.** `.git` может вернуться к
+исходному коммиту `3fc074a` («Initial commit»), при этом все файлы останутся
+в рабочем дереве как неотслеживаемые. Признак: `git log --oneline` показывает
+только один коммит, `git status` — длинный список `??`.
+
+Данные при этом не теряются: **всё, что запушено, лежит на GitHub.** Проверить:
+
+```bash
+git ls-remote origin                                  # что реально на сервере
+gh api repos/e6six/mergegame/contents/docs/handoff.md?ref=arena/01a0fe84-mergegame --jq .size
+```
+
+Восстановить локальную ветку из удалённой:
+
+```bash
+cd /home/user/mergegame
+tar czf /tmp/worktree-backup.tar.gz --exclude=node_modules --exclude=tools/venv --exclude=.git .
+git fetch origin arena/01a0fe84-mergegame
+git reset --hard origin/arena/01a0fe84-mergegame
+git branch --set-upstream-to=origin/arena/01a0fe84-mergegame
+```
+
+(Бэкап — страховка: `reset --hard` удаляет неотслеживаемые файлы, если они
+мешают записи. Перед этим стоит сравнить: `git diff origin/arena/01a0fe84-mergegame`
+— если различий нет, терять нечего.)
+
+**Вывод для работы: пушьте часто.** Локальные коммиты могут исчезнуть,
+удалённые — нет. Ветка — только `arena/01a0fe84-mergegame`, PR #1.
+
+Порядок действий при старте: **`tools/setup.sh`, затем проверка git,
+затем всё остальное.**
 
 ---
 
