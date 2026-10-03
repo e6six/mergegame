@@ -779,7 +779,7 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     const levelInfo = el('div', '', `Уровень ${item.level} · ${value} монет`);
     levelInfo.style.cssText = 'font-size:11px;opacity:0.8;font-weight:700;';
     popup.append(levelInfo);
-    const hint = el('div', '', '💰 Перетащи в корзину внизу чтобы продать\n🔗 Найди 3 или 5 таких же рядом');
+    const hint = el('div', '', 'Перетащи в корзину внизу чтобы продать\nНайди 3 или 5 таких же рядом');
     hint.style.cssText = 'font-size:10px;line-height:1.2;white-space:pre-line;text-align:center;opacity:0.85;';
     popup.append(hint);
     root.append(popup);

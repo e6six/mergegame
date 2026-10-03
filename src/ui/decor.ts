@@ -79,7 +79,7 @@ export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): 
     const decorEff = game.decorEffects;
     effects.innerHTML = `
       <div><strong>Бонусы декора:</strong></div>
-      <div>💰 Доход: +${(decorEff.incomeBonus * 100).toFixed(0)}% · ⚡ Энергия: +${decorEff.energyBonus} · 🌸 Редкие: +${(decorEff.rareBonus * 100).toFixed(0)}% · 🏅 Репутация: +${(decorEff.repBonus * 100).toFixed(0)}% · ⛲ Пассив: +${(decorEff.passiveBonus * 100).toFixed(0)}%</div>
+      <div>Доход: +${(decorEff.incomeBonus * 100).toFixed(0)}% · Энергия: +${decorEff.energyBonus} · Редкие: +${(decorEff.rareBonus * 100).toFixed(0)}% · Репутация: +${(decorEff.repBonus * 100).toFixed(0)}% · Пассив: +${(decorEff.passiveBonus * 100).toFixed(0)}%</div>
       <div>Гербарий: +${(game.herbariumBonus * 100).toFixed(1)}% · Всего бонусов: +${((decorEff.incomeBonus + game.herbariumBonus) * 100).toFixed(1)}% к доходу</div>
     `;
 
