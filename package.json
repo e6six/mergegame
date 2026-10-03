@@ -1,0 +1,23 @@
+{
+  "name": "flower-quarter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Цветочный квартал — браузерная игра: мердж цветов кормит тайкун цветочного магазина",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node tools/check-build.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gen:items": "node tools/gen-items.mjs",
+    "sim": "tools/py tools/simulate.py",
+    "check:build": "node tools/check-build.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}
