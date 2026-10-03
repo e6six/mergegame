@@ -174,6 +174,13 @@ export function mountTutorial(
     const margin = 20;
     const gap = 32;
 
+    // Подсказка не должна заезжать на шапку с монетами и энергией: раньше её
+    // прижимало к 20px от верха окна, и текст налезал на счётчики.
+    // Если сама цель находится в шапке, запрет не действует.
+    const hud = root.querySelector('.hud') as HTMLElement | null;
+    const hudBottom = hud && !hud.contains(target) ? hud.getBoundingClientRect().bottom : 0;
+    const minTop = Math.max(margin, hudBottom + 8);
+
     let left = 0;
     let top = 0;
 
@@ -197,7 +204,7 @@ export function mountTutorial(
     }
 
     left = Math.max(margin, Math.min(window.innerWidth - tipRect.width - margin, left));
-    top = Math.max(margin + (isMobile ? 60 : 0), Math.min(window.innerHeight - tipRect.height - margin - 20, top));
+    top = Math.max(isMobile ? Math.max(minTop, 60) : minTop, Math.min(window.innerHeight - tipRect.height - margin - 20, top));
 
     if (isMobile && (placement === 'left' || placement === 'right')) {
       left = (window.innerWidth - tipRect.width) / 2;
@@ -206,7 +213,7 @@ export function mountTutorial(
       } else {
         top = rect.bottom + margin + gap;
       }
-      top = Math.max(margin, Math.min(window.innerHeight - tipRect.height - margin, top));
+      top = Math.max(minTop, Math.min(window.innerHeight - tipRect.height - margin, top));
     }
 
     tooltip.style.left = `${left}px`;
@@ -357,7 +364,8 @@ export function mountTutorial(
 
     const hintEl = el('div', 'tutorial__hint');
     hintEl.style.cssText = 'background:#E8F5E9;border:2px dashed var(--sage);border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700;color:#2a4a2a;display:flex;align-items:center;gap:6px;';
-    hintEl.innerHTML = `<span>👉</span><span>${step.hint}</span>`;
+    // Без эмодзи: подсказку помечаем цветом и границей, а не картинкой-рукой
+    hintEl.append(el('span', 'tutorial__hint-mark', '→'), el('span', '', step.hint));
 
     const foot = el('div', 'tutorial__foot');
     foot.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;';
@@ -397,7 +405,8 @@ export function mountTutorial(
         nextBtn.disabled = false;
         hintEl.style.background = '#D4EDDA';
         hintEl.style.borderColor = '#7FA37D';
-        hintEl.innerHTML = `<span>✅</span><span>Готово! Нажми «Дальше»</span>`;
+        hintEl.textContent = '';
+        hintEl.append(el('span', 'tutorial__hint-mark', '✓'), el('span', '', 'Готово! Нажми «Дальше»'));
       } else {
         nextBtn.disabled = true;
         nextBtn.style.opacity = '0.4';

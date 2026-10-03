@@ -551,6 +551,12 @@ _принят. Добавлен сверх манифеста: нужна мет
 Isolated single empty wicker basket with an arched handle, with a few golden coins inside, cozy garden style, game UI icon, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, {PALETTE}, clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, icon fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
 ```
 
+**ui-shop** — Магазин
+
+```text
+Isolated single cozy little wooden market stall with a striped cream and dusty rose awning and a small crate of pink flowers on the counter, game UI icon, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, {PALETTE}, clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, icon fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.
+```
+
 
 ### Декор
 

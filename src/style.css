@@ -1965,3 +1965,35 @@ body {
     box-shadow: 0 0 0 3px #E98C9B, 0 0 0 6px rgba(233,140,155,0.2), 0 8px 16px rgba(0,0,0,0.2) !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Иконка внутри кнопки (магазин) и метка подсказки туториала.
+   Добавлено вместе с ui-shop.png: раньше на кнопке магазина стоял эмодзи 🛒,
+   а в туториале — 👉 и ✅. Всё, что видит игрок, должно быть нарисовано
+   ассетами или чистым CSS, без эмодзи.
+--------------------------------------------------------------------------- */
+.button--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.button--icon img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex: none;
+}
+
+.tutorial__hint-mark {
+  font-weight: 900;
+  color: var(--sage-dark);
+  flex: none;
+}
+
+@media (max-width: 600px) {
+  .button--icon img {
+    width: 16px;
+    height: 16px;
+  }
+}

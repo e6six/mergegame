@@ -107,7 +107,7 @@ export function mountHerbarium(root: HTMLElement, game: Game, onClose: () => voi
           itemEl.append(img(sprite, itemDef.name, ''));
           itemEl.append(el('span', '', `${lvl}. ${itemDef.name}`));
         } else {
-          itemEl.append(el('div', '', '🔒'));
+          itemEl.append(img(spriteUrl('ui-locked'), 'не открыт'));
           itemEl.append(el('span', '', `${lvl}. ???`));
         }
 

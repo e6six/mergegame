@@ -1,6 +1,17 @@
 # Передача работы: «Цветочный квартал» — полный гайд для следующего AI-агента
 
-**Актуально на:** 2026-10-03, ветка `main` commit `17497d4`, 53 теста зелёных, сборка 3.7MB 75 картинок (73 спрайта +2 фона), JS 83KB CSS 30KB.
+**Актуально на:** 2026-10-03, ветка `arena/01a103b7-mergegame` (от `main` `d35860e`), **63 теста зелёных**, сборка 3.9MB **78 картинок (76 спрайтов +2 фона)**, JS 84KB CSS 30KB.
+
+**Что изменилось в этом цикле (2026-10-03, аудит после жалобы «игра откатилась»):**
+- Проверено: **ни один файл не потерян**, авария коммита f4fbd21 полностью вылечена в 229d8e6 + bbaaddc. Сравнение деревьев `d038c88` (до аварии) и HEAD: пропавших файлов 0.
+- Добавлен хонсей-тест: `src/core/session.test.ts` + бот `src/core/player-model.ts`. Бот играет партию настоящим кодом игры и проверяет инварианты каждый шаг.
+- **Найден завышенный баланс:** реальный код даёт **2.96 заказа за сессию** вместо 4.86, которые обещает `tools/simulate.py` (симулятор не знает про связные группы). Замер: `npm run measure`. Подробности в `docs/balance-report.md`.
+- Догенерированы 2 декора, которые висели как pending: `decor-hammock`, `decor-cat` — спрайтов стало 76.
+- Добавлен `ui-shop.png`, эмодзи 🛒 на кнопке магазина убран; 🔒 и ✅ в гербарии/туториале заменены на спрайт `ui-locked` и текстовые символы.
+- Починен туториал: подсказка больше не налезает на HUD (прижималась к 20px от верха, теперь не заходит выше шапки).
+- Убран устаревший текст «продавай кликом» (продажа только перетаскиванием в корзину).
+- Типы `data/balance.json` описаны в `src/core/balance.ts` (декор, гербарий, репутация), в `game.ts` убраны соответствующие `as any`.
+- Новые тесты: эмодзи в интерфейсе нет (проверяет разметку всех панелей).
 
 **Всё в `main`, без веток.** `arena/01a102eb-mergegame` была синхронизирована с main (f0320a6) и **удалена** после проверки что ничего не потеряно — `git push origin --delete arena/01a102eb-mergegame`. Работаем только по `main`. Локально и на remote осталась только `main`.
 
@@ -80,10 +91,10 @@ git reset --hard origin/main
 
 **Итого:** 53 теста, 3.7MB (лимит 100MB), 75 картинок, JS 83KB gzip 27KB, CSS 30KB gzip 6.8KB.
 
-### Арт-пакет — аудит на f0320a6
+### Арт-пакет — аудит на 2026-10-03 (актуальный)
 
 ```
-art/manifest.json: 50 chain items (rose, wild, exotic, pack, tools по 10) +3 gen +6 bld +5 ui +11 decor =75 ассетов
+art/manifest.json: 50 chain items (rose, wild, exotic, pack, tools по 10) +3 gen +6 bld +6 ui +11 decor =76 ассетов
 art/prompts.md: 75 ассетов +2 фона =77, 17 с переделками, все с light gray фоном и референсом flowershop-keyart.png
 art/raw/: 75 файлов (73 спрайта raw +2 stage raw) — нет raw для hammock/cat, т.к. лимит
 art/sprites/: 73 файла (6 bld +9 decor +10 exotic +3 gen +10 pack +10 rose +10 tools +5 ui +10 wild) — 73/75, missing 2
@@ -94,7 +105,7 @@ dist/assets после build: 75 картинок (73 спрайта +2 фона
 **Проверка использования:**
 - Все 73 спрайта в manifest, нет extra not in manifest — `python audit` показывает 0 лишних
 - Все raw имеют спрайты кроме stage (ожидаемо)
-- Missing sprites: `decor-hammock`, `decor-cat` — в manifest и balance.json есть, в sprites нет из-за лимита 10/ход
+- Missing sprites: **нет** — `decor-hammock` и `decor-cat` догенерированы 2026-10-03, добавлен `ui-shop`
 - UI иконки: ui-coin, ui-energy, ui-rep, ui-locked, ui-sell-basket — все используются via spriteUrl (app.ts: ui-coin HUD монеты, ui-energy HUD энергия, ui-rep HUD репутация + декор + гербарий + квартал, ui-locked закрытые клетки, ui-sell-basket корзина)
 - Chain items: 50 via ITEM_BY_KEY → board rendering
 - Buildings: 6 via bld-${id} → quarter.ts
@@ -238,10 +249,18 @@ tools/py tools/check-sprites.py
 npm run build  # должно быть 75 картинок когда всё готово (73+2 фона → 75 сейчас, 75+2=77 когда догенерим 2)
 ```
 
-**Что осталось сгенерировать:**
-- `decor-hammock` — "cozy hammock between two wooden posts with cream fabric" — промт в prompts.md
-- `decor-cat` — "cute orange tabby cat sleeping on a cream cushion" — промт в prompts.md
-- Промты уже в manifest.json и prompts.md, нужно только вызвать generate_image и cutout. В этом чате лимит 10 уже использован (ui-sell-basket +9 decor), попытки hammock/cat вернули "limit 10 reached for this turn". В следующем чате лимит сбросится.
+**Что осталось сгенерировать:** ничего из очереди. Все 76 ассетов манифеста на месте.
+Дальше по плану — ambient fx (`fx-butterfly`, `fx-petal`) как png вместо CSS-фигур,
+промты для них пока не заведены: сначала добавить в `art/manifest.json`, потом
+`node tools/render-prompts.mjs`, сгенерировать, `tools/py tools/cutout.py`.
+
+**Проверка состояния без запуска игры:**
+
+```bash
+npm test          # 63 теста, включая сквозной прогон ботом
+npm run measure   # 24 сессии по 10 минут: заказы/клики/поле по сидам
+npm run build     # 78 картинок, 3.9MB
+```
 
 **Как добавить новый ассет:**
 1. Добавить в `art/manifest.json` в соответствующий массив (ui, decor, buildings, generators, chains) с id и subject
@@ -307,13 +326,30 @@ python3 -c "import json,os; m=json.load(open('art/manifest.json')); ids=sum([[it
 
 ## 8. Что делать дальше — приоритет (запас 96MB)
 
-1. **Догенерировать 2 декора** (hammock, cat) — 5 минут, промты готовы, лимит сбросится в новом чате. После генерации: `tools/py tools/cutout.py art/raw/decor-hammock.png art/raw/decor-cat.png --outdir art/sprites && npm run build` — должно стать 75 спрайтов +2 фона =77 картинок в сборке.
-2. **Сгенерировать ambient ассеты** — fx-butterfly-01, fx-petal-01 как отдельные png (например 32px) и использовать вместо CSS в ambient-decor — будет красивее и соответствует "всё сгенерировано".
+1. **Сгенерировать ambient ассеты** — fx-butterfly-01, fx-petal-01 как отдельные png (например 32px) и использовать вместо CSS в ambient-decor — будет красивее и соответствует "всё сгенерировано".
 3. **Анимации** — полёт монетки к HUD (fly-clone уже есть, но нужно к монетам), тряска генератора при клике, конфетти при 10 уровне (merge-particle есть).
 4. **Симуляция рекламы** — кнопка "+25 энергии за рекламу" с фейк-оверлеем 3с, баланс energy.rewarded_bonus уже есть.
 5. **Yandex SDK** — последним, как просил пользователь.
 
 Порядок от пользователя: quarter_buildings → meta → polish_mobile → animations → ads_balance=yes_sim → SDK.
+
+---
+
+## 8.5 Найденные слабые места (не сломано, но стоит знать)
+
+- **Баланс на 18% от нижней границы цели.** Реальный темп — 2.96 заказа за сессию,
+  цель 2.5–8. Если живые игроки окажутся медленнее бота — поднимать
+  `orders.coins_per_click` или вес уровней 2–3 в заказах.
+- **`src/style.css` — 1967 строк, 73 селектора описаны повторно** (стили дописывали
+  снизу в нескольких чатах). Реальных конфликтов два: `.cell transition` и
+  `.toast animation`. Вёрстку не ломают, но перед большой работой по UI файл стоит
+  разобрать по блокам.
+- **Скриншоты в `screenshots/` устарели** — сняты до правок 2026-10-03. Браузера в
+  песочнице нет (не ставятся libnss3 и chromium), поэтому переснять их может
+  только человек из live preview.
+- **Проверить глазами в live preview** (браузера у агента нет): кнопка магазина с
+  новой иконкой, подсказки туториала не налезают на HUD, декор-гамак и декор-котик
+  в панели «Декор».
 
 ---
 
@@ -323,6 +359,7 @@ python3 -c "import json,os; m=json.load(open('art/manifest.json')); ids=sum([[it
 - **f4fbd21:** сгенерированы 10 новых ассетов (sell-basket +9 decor) через generate_image с референсом flowershop-keyart.png, cutout.py, 75 картинок в сборке. **БАГ:** partial add удалил 28 файлов (tutorial, herbarium, screenshots, quarter-buildings.json) и упростил game.ts до SAVE_VERSION 1.
 - **229d8e6:** восстановлены удалённые файлы — единая ветка main, но game.ts остался упрощённым, тесты падали effectiveEnergyCap is not a function.
 - **bbaaddc:** восстановлен полный game.ts из 396ad16 (SAVE_VERSION 3, herbarium, tutorialCompleted, effectiveEnergyCap, decorLevels), app.ts с корзиной ui-sell-basket и иконкой ui-energy, decor.ts 11 иконок, style.css без 🌸🌿🌼, tutorial без 🌸🌿. Тесты 53 зелёных, 75 картинок, эмодзи в src нет.
+- **2026-10-03 (arena/01a103b7):** аудит после жалобы пользователя «игра откатилась». Проверено: потерь файлов нет. Добавлен бот-игрок и сквозной тест, найден завышенный баланс (2.96 против 4.86 за сессию), догенерированы гамак и котик, добавлен ui-shop, убраны последние эмодзи (🛒🔒✅👉), починен туториал (налезал на HUD), описаны типы декора/гербария/репутации, убран устаревший текст про продажу кликом. Тесты 53 → 63.
 - **f0320a6:** обновлён handoff и roadmap, аудит ассетов — всё используется, ничего не потеряно, missing только 2 декора из-за лимита 10/ход.
 
 ---

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Game } from '../core/game';
+import { BALANCE } from '../core/balance';
 import { mountApp } from './app';
 
 /**
@@ -48,6 +49,23 @@ function cells(root: HTMLElement): HTMLElement[] {
 function pointerClick(el: HTMLElement): void {
   el.dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
   el.dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
+}
+
+/**
+ * Эмодзи в интерфейсе запрещены: пользователь отдельно просил, чтобы всё, что
+ * видит игрок, было нарисовано ассетами (art/sprites) или чистым CSS.
+ * Проверка ловит именно эмодзи-презентацию, не трогая обычные символы вроде
+ * стрелок, галочек и многоточий.
+ */
+const EMOJI = /\p{Emoji_Presentation}/u;
+
+/** Открывает панель по подписи кнопки (квартал, гербарий, декор, магазин). */
+function openPanel(root: HTMLElement, label: string): void {
+  const button = [...root.querySelectorAll('button')].find((b) =>
+    b.textContent?.includes(label),
+  ) as HTMLButtonElement | undefined;
+  expect(button, `кнопка «${label}» не найдена`).toBeDefined();
+  button?.click();
 }
 
 describe('интерфейс', () => {
@@ -230,6 +248,71 @@ describe('интерфейс', () => {
     ) as HTMLButtonElement;
     close.click();
     expect(root.querySelector('.quarter')).toBeNull();
+  });
+
+  it('в интерфейсе нет эмодзи — только спрайты, текст и CSS', () => {
+    const { root, app } = setup();
+    const check = (where: string) => {
+      const html = root.innerHTML;
+      const found = html.match(EMOJI);
+      expect(found, `эмодзи ${found?.[0]} в разметке (${where})`).toBeNull();
+    };
+
+    check('основной экран');
+
+    // Кнопка магазина — со спрайтом ui-shop (раньше был эмодзи 🛒)
+    const shopImg = [...root.querySelectorAll('.button--icon img')].map((n) => n.getAttribute('src'));
+    expect(shopImg.some((src) => src?.includes('ui-shop'))).toBe(true);
+
+    // Каждая панель открывается поверх остальных — проверяем по очереди
+    openPanel(root, 'Гербарий');
+    app.render();
+    check('гербарий');
+    // На закрытых видах спрайт ui-locked, а не символ замка
+    expect(root.querySelector('.herbarium__item--locked img')?.getAttribute('src')).toContain('ui-locked');
+
+    openPanel(root, 'Декор');
+    app.render();
+    check('декор');
+
+    openPanel(root, 'Квартал');
+    app.render();
+    check('квартал');
+  });
+
+  it('в панели декора все 11 видов со своими спрайтами', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Декор');
+    app.render();
+
+    const tiles = [...root.querySelectorAll('.quarter__tile')];
+    expect(tiles).toHaveLength(BALANCE.decor.length);
+    for (const tile of tiles) {
+      const src = tile.querySelector('img')?.getAttribute('src') ?? '';
+      // Ни один декор не должен падать на запасную иконку ui-rep:
+      // у всех 11 видов есть собственный сгенерированный спрайт
+      expect(src, `декор без спрайта: ${tile.textContent}`).toContain('decor-');
+    }
+  });
+
+  it('окно магазина без эмодзи', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Магазин');
+    app.render();
+    const found = root.innerHTML.match(EMOJI);
+    expect(found, `эмодзи ${found?.[0]} в магазине`).toBeNull();
+  });
+
+  it('подсказка о переполнении поля ведёт в корзину, а не «клик по предмету»', () => {
+    const { root, game, app } = setup();
+    game.board.openCells = 10;
+    for (let i = 0; i < 9; i += 1) game.board.place({ chainId: 'rose', level: 1 });
+    app.render();
+
+    const relief = root.querySelector('.relief') as HTMLElement;
+    expect(relief).not.toBeNull();
+    expect(relief.textContent).toContain('корзину');
+    expect(relief.textContent).not.toContain('клик по предмету');
   });
 
   it('показывает предупреждение о переполнении поля', () => {

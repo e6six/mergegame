@@ -107,7 +107,8 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   herbariumButton.title = 'Коллекция открытых видов';
   const decorButton = el('button', 'button button--small', 'Декор');
   decorButton.title = 'Украшения квартала за репутацию';
-  const shopButton = el('button', 'button button--small', '🛒 Магазин');
+  const shopButton = el('button', 'button button--small button--icon');
+  shopButton.append(img(spriteUrl('ui-shop'), ''), document.createTextNode('Магазин'));
   shopButton.title = 'Магазин улучшений — холодильник, витрина, касса, склад';
   const soundButton = el('button', 'button button--small');
   const refreshSound = () => {
@@ -1080,7 +1081,7 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
         el(
           'div',
           '',
-          `Поле заполнено на ${Math.round(game.board.fillRatio() * 100)}%. Продавай лишнее (клик по предмету) или соединяй — иначе некуда будет ставить новые.`,
+          `Поле заполнено на ${Math.round(game.board.fillRatio() * 100)}%. Перетащи лишнее в корзину или соединяй — иначе некуда будет ставить новые.`,
         ),
       );
       ordersBody.append(relief);
@@ -1341,7 +1342,7 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     head.className = 'quarter__head';
     const title = document.createElement('div');
     title.className = 'quarter__title';
-    title.textContent = '🛒 Магазин улучшений';
+    title.textContent = 'Магазин улучшений';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'button';
     closeBtn.textContent = 'Вернуться';

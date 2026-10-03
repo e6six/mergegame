@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "gen:items": "node tools/gen-items.mjs",
     "sim": "tools/py tools/simulate.py",
-    "check:build": "node tools/check-build.mjs"
+    "check:build": "node tools/check-build.mjs",
+    "measure": "MEASURE=1 vitest run src/core/session.measure.test.ts"
   },
   "devDependencies": {
     "jsdom": "^30.1.1",
