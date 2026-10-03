@@ -11,6 +11,8 @@
  *
  * Полировка: баланс громкости, новые звуки для мета-слоя, mute по умолчанию
  * на мобиле (coarse pointer), мягкая атака без щелчков.
+ *
+ * Фонового эмбиента нет — был убран по просьбе пользователя как гул в ушах.
  */
 
 export type SoundName =
@@ -33,13 +35,8 @@ const VOLUME_KEY = 'flower-quarter/volume';
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
-let ambientGain: GainNode | null = null;
-let ambientNodes: AudioNode[] = [];
-let ambientInterval: number | null = null;
-let ambientPlaying = false;
 let muted = readMuted();
 let volume = readVolume();
-let ambientVolume = 0.35; // приглушённое расслабляющее
 
 function readMuted(): boolean {
   try {
@@ -90,9 +87,6 @@ export function unlockAudio(): boolean {
       master.gain.value = 0.32 * volume;
       master.connect(context.destination);
 
-      ambientGain = context.createGain();
-      ambientGain.gain.value = muted ? 0 : ambientVolume * volume * 0.32;
-      ambientGain.connect(context.destination);
     }
     if (context.state === 'suspended') void context.resume();
     return true;
@@ -112,115 +106,19 @@ interface ToneOptions {
   lowpass?: number;
 }
 
-export function startAmbient(): void {
-  if (!unlockAudio() || !context || !ambientGain || ambientPlaying) return;
-  if (muted) return;
-  ambientPlaying = true;
-
-  // мягкий ветер — фильтрованный шум
-  try {
-    const bufferSize = context.sampleRate * 2;
-    const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
-    const data = buffer.getChannelData(0);
-    let lastOut = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      lastOut = lastOut * 0.98 + white * 0.02; // brown noise
-      data[i] = lastOut * 0.5;
-    }
-    const source = context.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = context.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 400;
-    filter.Q.value = 0.5;
-    const gain = context.createGain();
-    gain.gain.value = ambientVolume * 0.25;
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(ambientGain);
-    source.start();
-    ambientNodes.push(source, filter, gain);
-
-    // тихий пэд — две синусоиды с лёгким биением
-    const osc1 = context.createOscillator();
-    const osc2 = context.createOscillator();
-    const padGain = context.createGain();
-    osc1.type = 'sine';
-    osc2.type = 'sine';
-    osc1.frequency.value = 110;
-    osc2.frequency.value = 110.5;
-    padGain.gain.value = ambientVolume * 0.15;
-    const padFilter = context.createBiquadFilter();
-    padFilter.type = 'lowpass';
-    padFilter.frequency.value = 600;
-    osc1.connect(padFilter);
-    osc2.connect(padFilter);
-    padFilter.connect(padGain);
-    padGain.connect(ambientGain);
-    osc1.start();
-    osc2.start();
-    ambientNodes.push(osc1, osc2, padFilter, padGain);
-
-    // случайные птички — каждые 4-10 секунд
-    const birdLoop = () => {
-      if (!context || !ambientGain || muted || !ambientPlaying) return;
-      if (Math.random() < 0.7) {
-        const now = context.currentTime;
-        const base = 1200 + Math.random() * 800;
-        const osc = context.createOscillator();
-        const g = context.createGain();
-        const f = context.createBiquadFilter();
-        f.type = 'bandpass';
-        f.frequency.value = base;
-        f.Q.value = 2;
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(base, now);
-        osc.frequency.exponentialRampToValueAtTime(base * 1.5, now + 0.12);
-        osc.frequency.exponentialRampToValueAtTime(base, now + 0.25);
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(ambientVolume * 0.28, now + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-        osc.connect(f);
-        f.connect(g);
-        g.connect(ambientGain);
-        osc.start(now);
-        osc.stop(now + 0.4);
-      }
-    };
-    ambientInterval = window.setInterval(birdLoop, 3500 + Math.random() * 4000) as unknown as number;
-  } catch {
-    /* ignore */
-  }
-}
-
-export function stopAmbient(): void {
-  ambientPlaying = false;
-  if (ambientInterval !== null) {
-    clearInterval(ambientInterval);
-    ambientInterval = null;
-  }
-  for (const node of ambientNodes) {
-    try {
-      if ('stop' in node) (node as OscillatorNode | AudioBufferSourceNode).stop();
-      node.disconnect();
-    } catch {}
-  }
-  ambientNodes = [];
-}
-
-export function setAmbientVolume(v: number): void {
-  ambientVolume = Math.max(0, Math.min(1, v));
-  if (ambientGain) {
-    ambientGain.gain.value = muted ? 0 : ambientVolume * volume * 0.32;
-  }
-}
-
-export function isAmbientPlaying(): boolean {
-  return ambientPlaying;
-}
-
+/*
+ * Эмбиента здесь больше нет — и это осознанное решение.
+ *
+ * Была попытка сделать «атмосферу» синтезом: ветер из коричневого шума,
+ * пэд из двух синусоид 110 и 110.5 Гц с биением и случайные «птички».
+ * На слух это давало ровный низкочастотный гул, который резал уши, и звучал
+ * он всё время, пока открыта игра. Пользователь попросил убрать — убрано
+ * полностью: ни фонового гула, ни птичек.
+ *
+ * Остались только короткие звуки действий (клик, слияние, заказ, монеты).
+ * Если атмосфера понадобится снова, это должен быть отдельный звуковой файл
+ * с записью, зацикленный с плавным появлением, и по умолчанию выключенный.
+ */
 function tone({ freq, to, dur, type, gain, at = 0, lowpass }: ToneOptions): void {
   if (!context || !master || muted) return;
   const start = context.currentTime + at;
@@ -228,8 +126,11 @@ function tone({ freq, to, dur, type, gain, at = 0, lowpass }: ToneOptions): void
   const envelope = context.createGain();
 
   osc.type = type;
-  osc.frequency.setValueAtTime(freq, start);
-  if (to) osc.frequency.exponentialRampToValueAtTime(Math.max(1, to), start + dur);
+  // Верхняя граница 8 кГц: некоторые «взлёты» тона уезжали выше слышимого
+  // диапазона и превращались в писк на грани восприятия.
+  const clamp = (f: number) => Math.max(30, Math.min(8000, f));
+  osc.frequency.setValueAtTime(clamp(freq), start);
+  if (to) osc.frequency.exponentialRampToValueAtTime(clamp(to), start + dur);
 
   // опциональный lowpass для мягкости (убирает резкие гармоники)
   if (lowpass && context) {
@@ -368,14 +269,6 @@ export function play(name: SoundName, options: PlayOptions = {}): void {
 
 export function setMuted(value: boolean): void {
   muted = value;
-  if (ambientGain && context) {
-    ambientGain.gain.setValueAtTime(muted ? 0 : ambientVolume * volume * 0.32, context.currentTime);
-  }
-  if (muted) {
-    stopAmbient();
-  } else if (!ambientPlaying) {
-    // не стартуем автоматом, ждём unlock
-  }
   try {
     localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
   } catch {
@@ -387,9 +280,6 @@ export function setVolume(value: number): void {
   volume = Math.max(0, Math.min(1, value));
   if (master) {
     master.gain.value = 0.32 * volume;
-  }
-  if (ambientGain) {
-    ambientGain.gain.value = muted ? 0 : ambientVolume * volume * 0.32;
   }
   try {
     localStorage.setItem(VOLUME_KEY, String(volume));

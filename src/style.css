@@ -6,8 +6,8 @@
   --wood: #c89a63;
   --rose: #e98c9b;
   --ink: #3b4046;
-  --cell-a: #dce7d6;
-  --cell-b: #d2e0cb;
+  --cell-a: #f8f4ec;
+  --cell-b: #eef3e9;
   --cell-locked: #c3b9ab;
   --shadow: 0 2px 0 rgba(59, 64, 70, 0.18);
   --radius: 14px;
@@ -21,14 +21,20 @@ html,
 body {
   margin: 0;
   height: 100%;
-  background: var(--sage-dark);
-  background-image: url('/art/backgrounds/stage-board.jpg');
-  background-size: cover;
-  background-position: center;
   color: var(--ink);
   font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
   overflow: hidden;
+  /*
+   * Фон — садовый стол из арта игры. Раньше поверх него лежала белая плёнка
+   * плотностью 0.42, и дерево превращалось в серый бетон: интерфейс выглядел
+   * мрачно. Теперь это просто стол, на котором разложены панели и доска:
+   * плёнка лёгкая, по краям мягкая виньетка.
+   */
+  background-image: url('/art/backgrounds/stage-board.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 #app {
@@ -38,12 +44,13 @@ body {
   position: relative;
 }
 
-/* Затемнение поверх фона доски: спрайты должны читаться, а фон — не мешать */
+/* Тёплая вуаль и виньетка: доска и панели читаются, стол виден, но не спорит */
 #app::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(243, 234, 219, 0.42);
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(255, 252, 245, 0.55) 0%, rgba(255, 250, 240, 0.3) 45%, rgba(96, 82, 62, 0.22) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -75,10 +82,13 @@ body {
 .hud {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: var(--cream);
-  border-bottom: 3px solid var(--sage-dark);
+  gap: 8px;
+  margin: 10px 10px 0;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(243, 234, 219, 0.96) 100%);
+  border: 2px solid rgba(200, 154, 99, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(89, 78, 60, 0.18);
   flex-wrap: wrap;
 }
 
@@ -135,32 +145,39 @@ body {
   flex: 1;
   display: flex;
   min-height: 0;
+  gap: 10px;
+  padding: 10px;
 }
 
 .panel {
-  width: 320px;
-  flex: 0 0 320px;
-  background: var(--cream);
-  border-right: 3px solid var(--sage-dark);
+  width: 300px;
+  flex: 0 0 300px;
+  background: rgba(251, 246, 236, 0.95);
+  border: 2px solid rgba(200, 154, 99, 0.5);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(89, 78, 60, 0.16);
 }
 
 .panel--right {
-  border-right: none;
-  border-left: 3px solid var(--sage-dark);
+  border: 2px solid rgba(200, 154, 99, 0.5);
 }
 
 .panel__head {
   padding: 10px 12px;
-  font-weight: 700;
-  background: var(--cream-light);
+  font-weight: 800;
+  background: linear-gradient(180deg, #ffffff 0%, #f6efe2 100%);
   border-bottom: 2px solid var(--sage);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .panel__body {
@@ -179,17 +196,15 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 20px;
-  overflow: auto;
-  background: linear-gradient(135deg, #F3EADB 0%, #E8DCC8 100%);
-  border-radius: 28px;
-  border: 4px solid #C89A63;
-  box-shadow: 
-    inset 0 2px 12px rgba(255,255,255,0.8),
-    inset 0 -2px 8px rgba(0,0,0,0.08),
-    0 12px 40px rgba(59,64,70,0.18),
-    0 4px 12px rgba(59,64,70,0.12);
+  gap: 12px;
+  padding: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(243, 234, 219, 0.86) 100%);
+  border-radius: 20px;
+  border: 3px solid rgba(200, 154, 99, 0.7);
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, 0.7),
+    0 14px 34px rgba(89, 78, 60, 0.22);
   position: relative;
 }
 
@@ -239,19 +254,18 @@ body {
 .cell {
   width: var(--cell, 56px);
   height: var(--cell, 56px);
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--cell-a) 0%, #E8F0E3 100%);
+  border-radius: 12px;
+  background: linear-gradient(160deg, var(--cell-a) 0%, var(--cell-b) 100%);
   display: grid;
   place-items: center;
   position: relative;
   cursor: grab;
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
-  border: 2px solid rgba(157, 190, 154, 0.3);
-  box-shadow: 
-    inset 0 1px 0 rgba(255,255,255,0.8),
-    inset 0 -1px 2px rgba(0,0,0,0.05),
-    0 2px 4px rgba(59,64,70,0.08);
+  border: 1px solid rgba(157, 190, 154, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 5px rgba(89, 78, 60, 0.07);
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -291,11 +305,9 @@ body {
     inset 0 2px 0 rgba(255,255,255,0.4),
     inset 0 -2px 4px rgba(0,0,0,0.15),
     inset 0 0 0 2px rgba(255,255,255,0.15);
-  opacity: 0;
-  transform: translateY(24px) scale(0.85);
-  pointer-events: none;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-top: 10px;
+  opacity: 0.92;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: 6px;
   min-width: 240px;
   justify-content: center;
   position: relative;
@@ -397,102 +409,29 @@ body {
   text-shadow: 0 1px 0 rgba(255,255,255,0.5);
 }
 
-.ambient-decor {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-  border-radius: 28px;
-}
-
-.ambient-decor__item {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-}
-
-.ambient-decor__petal {
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(ellipse at 30% 30%, #FFB7C5 0%, #E98C9B 50%, #D16B7A 100%);
-  border-radius: 50% 0 50% 50%;
-  opacity: 0.45;
-  filter: blur(0.3px);
-  animation: petal-drift 6s ease-in-out infinite;
-}
-
-@keyframes petal-drift {
-  0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
-  15% { opacity: 0.5; }
-  85% { opacity: 0.3; }
-  100% { transform: translate(18px, 36px) rotate(180deg) scale(1.1); opacity: 0; }
-}
-
-.ambient-decor__butterfly {
-  width: 18px;
-  height: 12px;
-  background: 
-    radial-gradient(ellipse at 20% 50%, #FFB7C5 0%, #E98C9B 60%, transparent 70%),
-    radial-gradient(ellipse at 80% 50%, #9DBE9A 0%, #7FA37D 60%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0.6;
-  filter: blur(0.2px);
-  animation: butterfly-float 4.5s ease-in-out infinite;
-}
-
-@keyframes butterfly-float {
-  0%, 100% { transform: translate(0, 0) rotate(-3deg) scale(1); }
-  25% { transform: translate(12px, -14px) rotate(4deg) scale(1.05); }
-  50% { transform: translate(-8px, -20px) rotate(-2deg) scale(1.02); }
-  75% { transform: translate(10px, -10px) rotate(3deg) scale(1.03); }
-}
-
-.ambient-decor__sparkle {
-  width: 6px;
-  height: 6px;
-  background: radial-gradient(circle, #FFF8E1 0%, #FFD54F 40%, #FFB300 100%);
-  border-radius: 50%;
-  box-shadow: 0 0 6px #FFD54F, 0 0 12px rgba(255,213,79,0.4);
-  animation: sparkle-twinkle 2.2s ease-in-out infinite;
-}
-
-@keyframes sparkle-twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(0.7); }
-  50% { opacity: 1; transform: scale(1.3); }
-}
-
-.ambient-decor__glow {
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(ellipse at center, rgba(255,248,225,0.5) 0%, rgba(255,213,79,0.15) 40%, transparent 70%);
-  border-radius: 50%;
-  filter: blur(4px);
-  animation: glow-pulse 3.5s ease-in-out infinite;
-}
-
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, 0) scale(0.9); }
-  50% { opacity: 0.7; transform: translate(-50%, 0) scale(1.1); }
-}
+/*
+ * Здесь был «ambient декор»: CSS-фигуры (лепестки, бабочка, искры, свечение),
+ * которые бесконечно мигали поверх доски. Пользователь описал их как
+ * «моргающие листочки» и попросил убрать — убрано вместе со стилями.
+ * Декор теперь существует как настоящие спрайты и живёт в квартале.
+ */
 
 .cell--odd {
-  background: linear-gradient(135deg, var(--cell-b) 0%, #D2E0CB 100%);
+  background: linear-gradient(160deg, var(--cell-b) 0%, #e7efe1 100%);
 }
 
 .cell--locked {
-  background: linear-gradient(135deg, #C3B9AB 0%, #B8A99A 100%);
+  background: linear-gradient(135deg, #e7ded0 0%, #ddd2c2 100%);
   cursor: not-allowed;
-  border-color: rgba(195, 185, 171, 0.5);
-  box-shadow: 
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    inset 0 -1px 2px rgba(0,0,0,0.1);
+  border: 2px dashed rgba(157, 190, 154, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  opacity: 0.75;
 }
 
 .cell--locked img {
-  width: 60%;
-  height: 60%;
-  opacity: 0.5;
+  width: 46%;
+  height: 46%;
+  opacity: 0.42;
   filter: none;
 }
 
@@ -1033,13 +972,18 @@ body {
   }
 
   .hud {
+    margin: 0;
     padding: 6px 8px calc(6px + env(safe-area-inset-top, 0px));
     gap: 6px;
     position: sticky;
     top: 0;
     z-index: 10;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
     backdrop-filter: blur(8px);
-    background: rgba(243, 234, 219, 0.96);
+    background: rgba(251, 246, 236, 0.97);
   }
 
   .hud__title {
@@ -1243,27 +1187,33 @@ body {
     gap: 8px;
   }
 
+  .panel-tile img {
+    height: 64px;
+  }
+
+  /* Улица квартала на мобиле: карта во всю ширину, легенда в две колонки */
+  .quarter__legend {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .quarter__tile {
+    min-height: 46px;
+    padding: 5px 8px;
+    gap: 6px;
+  }
+
   .quarter__tile img {
-    height: 90px;
+    width: 32px;
+    height: 32px;
   }
 
-  .quarter__map-wrap {
-    aspect-ratio: 4 / 3;
-    max-height: 36vh;
-  }
-
-  .quarter__hotspot-badge {
-    font-size: 10px;
-    padding: 1px 6px;
-  }
-
-  .quarter__hotspot-name {
-    font-size: 9px;
-    padding: 1px 6px;
+  .quarter__bar .stat {
+    font-size: 12px;
   }
 
   .decor__strip {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 8px;
   }
 
@@ -1347,7 +1297,7 @@ body {
   }
 
   .decor__strip {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .herbarium__items {
@@ -1361,7 +1311,7 @@ body {
   }
 
   .decor__strip {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
 
   .stat {
@@ -1446,186 +1396,50 @@ body {
   }
 }
 
+/*
+ * Оверлей на весь экран: тёмная подложка для квартала, декора, гербария
+ * и магазина. Внутри — светлая панель или сцена с улицей.
+ */
 .quarter {
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: #2a2f33;
-  display: grid;
-  place-items: center;
+  background: #2c332e;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px clamp(10px, 3vw, 28px) calc(14px + env(safe-area-inset-bottom, 0px));
+  overflow: auto;
 }
 
-.quarter::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/art/backgrounds/stage-quarter.jpg');
-  background-size: cover;
-  background-position: center bottom;
-  opacity: 0.95;
-}
-
+/* Светлая панель: декор, гербарий, магазин */
 .quarter__panel {
   position: relative;
   width: min(1080px, 94vw);
   max-height: 88vh;
-  overflow: auto;
-  background: rgba(243, 234, 219, 0.94);
+  margin: auto;
+  background: var(--cream);
   border: 3px solid var(--sage-dark);
   border-radius: 18px;
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
 }
 
 .quarter__head {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .quarter__title {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 800;
   margin-right: auto;
-}
-
-.quarter__strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-}
-
-.quarter__tile {
-  background: var(--cream-light);
-  border: 2px solid var(--sage);
-  border-radius: var(--radius);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-  text-align: center;
-}
-
-.quarter__tile--locked {
-  border-style: dashed;
-  opacity: 0.85;
-}
-
-.quarter__tile--selected {
-  border-color: var(--rose);
-  box-shadow: 0 0 0 3px rgba(233, 140, 155, 0.25), 0 8px 20px rgba(0,0,0,0.12);
-  transform: scale(1.02);
-}
-
-.quarter__tile--new {
-  animation: building-grow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.decor__strip {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.quarter__tile img {
-  width: 100%;
-  height: 110px;
-  object-fit: contain;
-}
-
-.quarter__name {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.quarter__note {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-.quarter__badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: var(--sage-dark);
-  color: var(--cream-light);
-  border-radius: 999px;
-  padding: 1px 8px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-/* === Гербарий === */
-.herbarium__chains {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.herbarium__chain {
-  background: var(--cream-light);
-  border: 2px solid #D8CDBE;
-  border-radius: 14px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.herbarium__chain--completed {
-  background: linear-gradient(135deg, #FBF6EC, #F3EADB);
-  border-color: var(--sage);
-  box-shadow: 0 0 0 2px rgba(157, 190, 154, 0.3);
-}
-
-.herbarium__chain-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.herbarium__items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 6px;
-}
-
-.herbarium__item {
-  background: #fff;
-  border: 2px solid var(--sage);
-  border-radius: 10px;
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  text-align: center;
-  font-size: 9px;
-  line-height: 1.1;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.herbarium__item img {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.herbarium__item--locked {
-  background: #eee;
-  border-color: #ccc;
-  filter: grayscale(0.9);
-  opacity: 0.6;
-}
-
-.herbarium__item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(59, 64, 70, 0.15);
 }
 
 .quarter__hint {
@@ -1633,191 +1447,185 @@ body {
   opacity: 0.85;
 }
 
-/* === Интерактивная карта квартала на фоне === */
-.quarter__map-wrap {
+.quarter__strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+/* --- Улица квартала: фон + нарисованный декор на canvas --- */
+.quarter__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.quarter__bar .quarter__title {
+  color: var(--cream-light);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.quarter__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 52vh;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 2px solid var(--sage-dark);
-  background: #2a2f33;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-}
-
-.quarter__map-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('/art/backgrounds/stage-quarter.jpg');
-  background-size: cover;
-  background-position: center bottom;
-  filter: brightness(1.02) saturate(1.05);
-  transition: filter 0.3s ease;
-}
-
-.quarter__map-wrap:hover .quarter__map-bg {
-  filter: brightness(1.08) saturate(1.1);
-}
-
-.quarter__map-overlay {
-  position: absolute;
-  inset: 0;
-}
-
-.quarter__map-fx {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.quarter__map-tooltip {
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  background: rgba(59, 64, 70, 0.92);
-  color: #FBF6EC;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  pointer-events: none;
-  z-index: 5;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.quarter__hotspot {
-  position: absolute;
-  cursor: pointer;
-  border-radius: 14px;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* невидимая зона клика, но с подсветкой */
-}
-
-.quarter__hotspot:hover {
-  transform: scale(1.02);
-  z-index: 2;
-}
-
-.quarter__hotspot--selected {
-  z-index: 3;
-  transform: scale(1.04);
-}
-
-.quarter__hotspot-glow {
-  position: absolute;
-  inset: -6%;
+  max-width: 1180px;
+  margin: 0 auto;
+  flex: none;
   border-radius: 18px;
-  border: 3px solid transparent;
-  transition: all 0.25s ease;
+  overflow: hidden;
+  border: 3px solid rgba(243, 234, 219, 0.5);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.5);
+  background: #223028;
+  line-height: 0;
+}
+
+.quarter__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.quarter__info {
+  position: absolute;
+  max-width: 260px;
+  background: rgba(251, 246, 236, 0.97);
+  border: 2px solid var(--sage);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
   pointer-events: none;
 }
 
-.quarter__hotspot--locked .quarter__hotspot-glow {
-  border-style: dashed;
-  border-color: rgba(243, 234, 219, 0.4);
-}
-
-.quarter__hotspot:not(.quarter__hotspot--locked):hover .quarter__hotspot-glow {
-  border-color: rgba(233, 140, 155, 0.9);
-  box-shadow: 0 0 0 6px rgba(233, 140, 155, 0.15), 0 0 20px rgba(233, 140, 155, 0.3);
-}
-
-.quarter__hotspot--selected .quarter__hotspot-glow {
-  border-color: #E98C9B !important;
-  box-shadow: 0 0 0 4px rgba(233,140,155,0.3), 0 0 24px rgba(233,140,155,0.4) !important;
-}
-
-.quarter__hotspot-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: var(--sage-dark);
-  color: #FBF6EC;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 800;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.quarter__hotspot--new .quarter__hotspot-badge {
-  background: #E98C9B;
-  animation: badge-bounce 0.8s ease infinite;
-}
-
-@keyframes badge-bounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.quarter__hotspot-lock {
-  position: absolute;
-  inset: 0;
+.quarter__legend {
   display: grid;
-  place-items: center;
-  background: rgba(42, 47, 51, 0.55);
-  border-radius: 14px;
-  backdrop-filter: blur(1px);
-  transition: all 0.25s ease;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
 }
 
-.quarter__hotspot--locked:hover .quarter__hotspot-lock {
-  background: rgba(42, 47, 51, 0.35);
-}
-
-.quarter__hotspot-name {
-  position: absolute;
-  left: 50%;
-  bottom: 2px;
-  transform: translateX(-50%) translateY(2px);
+.quarter__tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: rgba(243, 234, 219, 0.94);
-  border: 1px solid var(--sage);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 10px;
+  border: 2px solid var(--sage);
+  border-radius: 12px;
+  padding: 6px 10px;
+  min-height: 54px;
+}
+
+.quarter__tile img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex: none;
+}
+
+.quarter__tile-name {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.quarter__tile-note {
+  display: block;
+  font-size: 11px;
+  opacity: 0.75;
+  line-height: 1.2;
+}
+
+.quarter__tile--locked {
+  background: rgba(210, 202, 188, 0.85);
+  border-color: rgba(157, 190, 154, 0.5);
+}
+
+.quarter__tile--locked .quarter__tile-name,
+.quarter__tile--locked .quarter__tile-note {
+  opacity: 0.6;
+}
+
+.quarter__decor-line {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto 4px;
+  text-align: center;
+  font-size: 12.5px;
   font-weight: 700;
-  white-space: nowrap;
-  opacity: 0;
-  transition: all 0.2s ease;
-  pointer-events: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  color: rgba(243, 234, 219, 0.92);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
-.quarter__tile--selected {
-  border-color: var(--rose) !important;
-  box-shadow: 0 0 0 3px rgba(233, 140, 155, 0.3), 0 6px 16px rgba(59, 64, 70, 0.15) !important;
-  transform: translateY(-2px) scale(1.02);
-  z-index: 1;
+/* --- Плитки в светлых панелях: магазин, декор, гербарий --- */
+.decor__strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 12px;
 }
 
-.quarter__tile--selected img {
-  transform: scale(1.05);
+.panel-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--cream-light);
+  border: 2px solid var(--sage);
+  border-radius: 14px;
+  text-align: center;
 }
 
-/* Адаптив для карты квартала */
-@media (max-width: 900px) {
-  .quarter__map-wrap {
-    aspect-ratio: 4 / 3;
-    max-height: 40vh;
-  }
-  .quarter__hotspot-name {
-    font-size: 9px;
-    padding: 1px 6px;
-  }
-  .quarter__map-tooltip {
-    font-size: 11px;
-    bottom: 8px;
-    padding: 4px 10px;
-  }
+.panel-tile--max {
+  border-color: var(--sage-dark);
+  background: linear-gradient(135deg, #fbf6ec, #e8f5e9);
 }
+
+.panel-tile img {
+  height: 76px;
+  width: auto;
+  object-fit: contain;
+}
+
+.panel-tile__name {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.panel-tile__note {
+  font-size: 11.5px;
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+.panel-tile__bar {
+  width: 100%;
+  height: 4px;
+  background: #d5d0c4;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.panel-tile__bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #9dbe9a, #7fa37d);
+  transition: width 0.4s ease;
+}
+
+/*
+ * Карта квартала раньше собиралась из DOM-хотспотов поверх фоновой картинки
+ * (quarter__map-*, quarter__hotspot-*). Она расползалась при смене размера окна,
+ * поэтому заменена на canvas: см. «Улица квартала» выше.
+ */
 
 /* === Туториал — первые 60 секунд === */
 .tutorial {
@@ -1996,4 +1804,161 @@ body {
     width: 16px;
     height: 16px;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Сообщение о покупке декора: «уже стоит на улице квартала».
+   Появляется после покупки и само исчезает через 7 секунд.
+--------------------------------------------------------------------------- */
+.placed-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(460px, 92vw);
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #fbf6ec, #eef3e8);
+  border: 2px solid var(--sage-dark);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(59, 64, 70, 0.32);
+  animation: placed-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes placed-in {
+  0% { opacity: 0; transform: translate(-50%, 20px) scale(0.94); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.placed-banner img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex: none;
+  filter: drop-shadow(0 3px 4px rgba(59, 64, 70, 0.22));
+}
+
+.placed-banner__text {
+  min-width: 0;
+}
+
+.placed-banner__title {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.placed-banner__note {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.placed-banner__close {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  color: rgba(59, 64, 70, 0.6);
+}
+
+.placed-banner__close:hover {
+  color: var(--ink);
+}
+
+/* Готовая к сдаче карточка заказа: кнопка должна звать нажать её */
+.order--ready .button:not(:disabled) {
+  background: var(--sage-dark);
+  border-color: #5f7f5d;
+  color: #fbf6ec;
+}
+
+.order--ready .button:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+/* Соединять можно, но заказ ещё не собран: спокойный акцент */
+.order__needs .need:not(.need--short) img {
+  filter: drop-shadow(0 2px 3px rgba(95, 127, 93, 0.35));
+}
+
+/* ---------------------------------------------------------------------------
+   Гербарий: строки цепочек и заголовки.
+   Классы использовались в herbarium.ts, но стилей для них не было — цепочки
+   выглядели как сплошная каша. Добавлено вместе с починкой вида гербария.
+--------------------------------------------------------------------------- */
+.herbarium__chains {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.herbarium__chain {
+  background: var(--cream-light);
+  border: 2px solid var(--sage);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.herbarium__chain--completed {
+  border-color: var(--sage-dark);
+  background: linear-gradient(135deg, #fbf6ec, #e8f5e9);
+}
+
+.herbarium__chain-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.herbarium__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+}
+
+.herbarium__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 1px solid rgba(157, 190, 154, 0.5);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 10.5px;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.herbarium__item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.herbarium__item--locked {
+  background: #f1ece1;
+  opacity: 0.85;
+}
+
+/* Полоска прогресса цепочки в гербарии (раньше класс был без стилей) */
+.quarter__progress {
+  height: 4px;
+  background: #d5d0c4;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.quarter__progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #9dbe9a, #7fa37d);
 }

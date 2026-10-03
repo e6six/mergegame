@@ -187,7 +187,10 @@ describe('интерфейс', () => {
     cells(root)[0].dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0 }));
     const popup = root.querySelector('.selection');
     expect(popup).not.toBeNull();
-    expect(popup?.textContent).toContain('Перетащи в корзину');
+    // Клик по предмету больше не «только инфо»: в карточке есть кнопка продажи,
+    // а подсказка напоминает про корзину для перетаскивания.
+    expect(popup?.textContent).toContain('корзину');
+    expect(popup?.textContent).toContain('Продать');
 
     // симулируем drag в корзину
     const cell = cells(root)[0];
@@ -285,7 +288,7 @@ describe('интерфейс', () => {
     openPanel(root, 'Декор');
     app.render();
 
-    const tiles = [...root.querySelectorAll('.quarter__tile')];
+    const tiles = [...root.querySelectorAll('.panel-tile')];
     expect(tiles).toHaveLength(BALANCE.decor.length);
     for (const tile of tiles) {
       const src = tile.querySelector('img')?.getAttribute('src') ?? '';
@@ -313,6 +316,95 @@ describe('интерфейс', () => {
     expect(relief).not.toBeNull();
     expect(relief.textContent).toContain('корзину');
     expect(relief.textContent).not.toContain('клик по предмету');
+  });
+
+  it('продаёт предмет кнопкой в карточке', () => {
+    const { root, game, app } = setup();
+    game.board.placeAt(0, { chainId: 'rose', level: 3 });
+    app.render();
+
+    pointerClick(cells(root)[0]);
+    const sell = [...root.querySelectorAll('.selection button')].find((b) =>
+      b.textContent?.includes('Продать'),
+    ) as HTMLButtonElement;
+    expect(sell).toBeDefined();
+
+    const coinsBefore = game.coins;
+    sell.click();
+
+    expect(game.board.at(0)).toBeNull();
+    expect(game.coins).toBeGreaterThan(coinsBefore);
+  });
+
+  it('покупка декора ставит его на улицу квартала', () => {
+    const { root, game, app } = setup();
+    game.reputation = 100000;
+    expect(game.buyDecor('bench')).toBe(true);
+    expect(game.buyDecor('cat')).toBe(true);
+
+    // Декор попадает на карту: canvas получает список нарисованных предметов
+    openPanel(root, 'Квартал');
+    app.render();
+    const canvas = root.querySelector('.quarter__canvas') as HTMLCanvasElement;
+    expect(canvas).not.toBeNull();
+    expect(canvas.dataset.decor ?? '').toContain('bench');
+    expect(canvas.dataset.decor ?? '').toContain('cat');
+
+    // И строка состояния рассказывает, сколько декора уже на улице
+    const line = root.querySelector('.quarter__decor-line') as HTMLElement;
+    expect(line.textContent).toContain('декора на улице 2');
+  });
+
+  it('в квартале есть переход «купить — посмотреть на улице»', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Декор');
+    app.render();
+
+    const seeBtn = [...root.querySelectorAll('button')].find((b) =>
+      b.textContent?.includes('Посмотреть на улице'),
+    ) as HTMLButtonElement;
+    expect(seeBtn).toBeDefined();
+
+    seeBtn.click();
+    app.render();
+    expect(root.querySelector('.quarter__canvas')).not.toBeNull();
+  });
+
+  it('доска целиком помещается в отведённое место, а не уезжает наверх', () => {
+    // Регрессия: раньше размер клетки считался от высоты окна с фиксированной
+    // поправкой «на заголовки», и на невысоких экранах доска с генераторами и
+    // корзиной не помещалась — верх доски обрезался.
+    const { root, game, app } = setup();
+    const wrap = root.querySelector('.board-wrap') as HTMLElement;
+    const generators = root.querySelector('.generators') as HTMLElement;
+    const sellZone = root.querySelector('.sell-zone') as HTMLElement;
+
+    Object.defineProperty(wrap, 'clientWidth', { value: 900, configurable: true });
+    Object.defineProperty(wrap, 'clientHeight', { value: 700, configurable: true });
+    Object.defineProperty(generators, 'offsetHeight', { value: 74, configurable: true });
+    Object.defineProperty(sellZone, 'offsetHeight', { value: 64, configurable: true });
+    app.render();
+
+    const board = root.querySelector('.board') as HTMLElement;
+    const cell = parseFloat(board.style.getPropertyValue('--cell'));
+    expect(Number.isFinite(cell)).toBe(true);
+
+    // Доска вместе с рамкой не должна вылезать за контейнер по высоте и ширине
+    const wrapStyle = getComputedStyle(wrap);
+    const boardStyle = getComputedStyle(board);
+    const num = (value: string, fallback: number) => {
+      const parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+    const gap = num(boardStyle.gap, 6);
+    const padY = num(wrapStyle.paddingTop, 20) + num(wrapStyle.paddingBottom, 20);
+    const boardPadY = num(boardStyle.paddingTop, 14) + num(boardStyle.paddingBottom, 14);
+    const boardPadX = num(boardStyle.paddingLeft, 14) + num(boardStyle.paddingRight, 14);
+
+    const boardHeight = cell * game.board.rows + gap * (game.board.rows - 1) + boardPadY;
+    const boardWidth = cell * game.board.cols + gap * (game.board.cols - 1) + boardPadX;
+    expect(boardHeight + padY + generators.offsetHeight + sellZone.offsetHeight).toBeLessThanOrEqual(700);
+    expect(boardWidth).toBeLessThanOrEqual(900);
   });
 
   it('показывает предупреждение о переполнении поля', () => {

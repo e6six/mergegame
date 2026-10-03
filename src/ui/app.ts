@@ -3,7 +3,7 @@ import { itemKey, type Item } from '../core/board';
 import { Game } from '../core/game';
 import type { Order } from '../core/orders';
 import { ITEM_BY_KEY } from '../data/items.generated';
-import { isMuted, play, toggleMuted, unlockAudio, startAmbient, stopAmbient } from './audio';
+import { isMuted, play, toggleMuted, unlockAudio } from './audio';
 import { spriteUrl } from './sprites';
 import { mountQuarter, type QuarterHandle } from './quarter';
 import { mountHerbarium, type HerbariumHandle } from './herbarium';
@@ -82,19 +82,58 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   let prevRep = Math.floor(game.reputation);
   let prevDay = game.day();
 
+  /**
+   * Размер клетки считаем от реального места, которое есть у доски.
+   *
+   * Раньше здесь вычитались фиксированные 260px от высоты окна «на заголовки»,
+   * и на невысоких экранах доска вместе с генераторами и корзиной не помещалась:
+   * её верх уезжал под шапку и обрезался. Теперь берём фактическую высоту
+   * контейнера доски и вычитаем высоту того, что лежит под ней (генераторы,
+   * корзина, отступы), а сами размеры зажаты рамками — доска всегда целиком
+   * видна на экране.
+   */
   const cellSize = () => {
     const wrap = root.querySelector('.board-wrap') as HTMLElement | null;
-    const width = wrap?.clientWidth ?? Math.min(window.innerWidth - 20, 700);
     const isMobile = window.innerWidth <= 900;
-    const gutter = isMobile ? 12 : 20;
-    const byWidth = Math.floor((width - gutter) / game.board.cols);
-    // На мобиле доска занимает ~50vh, учитываем заголовки/генераторы
-    const availableHeight = isMobile
-      ? Math.min(window.innerHeight * 0.48, window.innerHeight - 180)
-      : window.innerHeight - 260;
-    const byHeight = Math.floor(availableHeight / game.board.rows);
-    const minSize = isMobile ? 40 : 44;
-    const maxSize = isMobile ? 64 : 76;
+    const minSize = isMobile ? 34 : 40;
+    const maxSize = isMobile ? 58 : 68;
+
+    // Числа из CSS приходят строками, и там бывает 'normal' или пусто:
+    // parseFloat вернул бы NaN, а NaN распространяется на весь расчёт.
+    const px = (value: string | undefined, fallback: number): number => {
+      const parsed = parseFloat(value ?? '');
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+
+    const wrapStyle = wrap ? getComputedStyle(wrap) : null;
+    const padX =
+      px(wrapStyle?.paddingLeft, 20) + px(wrapStyle?.paddingRight, 20);
+    const padY =
+      px(wrapStyle?.paddingTop, 20) + px(wrapStyle?.paddingBottom, 20);
+    const rowGap = px(wrapStyle?.rowGap, 12);
+    const boardStyle = getComputedStyle(board);
+    const boardPad = px(boardStyle.paddingLeft, 14) + px(boardStyle.paddingRight, 14);
+    const boardPadY = px(boardStyle.paddingTop, 14) + px(boardStyle.paddingBottom, 14);
+    const gap = px(boardStyle.gap, 6);
+
+    const width = wrap?.clientWidth ?? Math.min(window.innerWidth - 20, 700);
+    const byWidth = Math.floor(
+      (width - padX - boardPad - gap * (game.board.cols - 1)) / game.board.cols,
+    );
+
+    // Что стоит под доской внутри той же колонки
+    const below = generators.offsetHeight + sellZone.offsetHeight + rowGap * 2;
+    const availableHeight = Math.max(
+      200,
+      (wrap?.clientHeight ?? window.innerHeight - 120) - padY - below,
+    );
+    // Из доступной высоты вычитаем и внутренние отступы доски: без этого
+    // доска оказывалась на пару десятков пикселей выше контейнера и её верх
+    // обрезался — именно это выглядело как «поле уехало наверх».
+    const byHeight = Math.floor(
+      (availableHeight - boardPadY - gap * (game.board.rows - 1)) / game.board.rows,
+    );
+
     return Math.max(minSize, Math.min(maxSize, byWidth, byHeight));
   };
 
@@ -117,18 +156,9 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   };
   soundButton.addEventListener('click', () => {
     unlockAudio();
-    const nowMuted = toggleMuted();
-    if (nowMuted) stopAmbient();
-    else startAmbient();
+    toggleMuted();
     refreshSound();
   });
-  // автозапуск эмбиента если звук не выключен
-  if (!isMuted()) {
-    // запустится после первого взаимодействия, но пробуем сразу
-    setTimeout(() => {
-      if (!isMuted()) startAmbient();
-    }, 1200);
-  }
   refreshSound();
   const dayStat = el('div', 'stat');
   const coinsStat = el('div', 'stat');
@@ -148,11 +178,10 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   const sellContent = el('div', 'sell-zone__content');
   sellContent.append(
     el('div', 'sell-zone__text', 'Корзина для продажи'),
-    el('div', 'sell-zone__value', 'Перетащи цветок сюда'),
+    el('div', 'sell-zone__value', 'Перетащи предмет сюда, чтобы продать'),
   );
   sellZone.append(basketImg, sellContent);
-  const ambientDecor = el('div', 'ambient-decor');
-  boardWrap.append(board, generators, sellZone, ambientDecor);
+  boardWrap.append(board, generators, sellZone);
 
   const ordersPanel = el('div', 'panel');
   const ordersHead = el('div', 'panel__head');
@@ -299,7 +328,11 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   }
 
   function hideSellZone(): void {
-    sellZone.classList.remove('sell-zone--visible', 'sell-zone--active');
+    // Корзина остаётся на месте: она часть стола и подсказка, как продавать.
+    // Снимаем только акцент «брошено сюда».
+    sellZone.classList.remove('sell-zone--active');
+    const valueEl = sellZone.querySelector('.sell-zone__value') as HTMLElement;
+    if (valueEl) valueEl.textContent = 'Перетащи предмет сюда, чтобы продать';
   }
 
   function sellItemAt(index: number): void {
@@ -780,9 +813,19 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     const levelInfo = el('div', '', `Уровень ${item.level} · ${value} монет`);
     levelInfo.style.cssText = 'font-size:11px;opacity:0.8;font-weight:700;';
     popup.append(levelInfo);
-    const hint = el('div', '', 'Перетащи в корзину внизу чтобы продать\nНайди 3 или 5 таких же рядом');
+    const hint = el('div', '', 'Найди 3 или 5 таких же рядом — они соединятся\nили перетащи предмет в корзину внизу');
     hint.style.cssText = 'font-size:10px;line-height:1.2;white-space:pre-line;text-align:center;opacity:0.85;';
     popup.append(hint);
+
+    // Продажа из карточки: перетаскивание в корзину осталось, но теперь
+    // у продажи есть понятная кнопка — игрок видит, что предмет можно сбыть.
+    const sell = el('button', 'button button--small button--rose', `Продать · ${value} монет`);
+    sell.addEventListener('click', (event) => {
+      event.stopPropagation();
+      sellItemAt(index);
+    });
+    popup.append(sell);
+
     root.append(popup);
     positionPopup(index);
   }
@@ -1216,55 +1259,6 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     game.events = [];
   }
 
-  function renderAmbientDecor(): void {
-    ambientDecor.innerHTML = '';
-    const decorLevels = (game as any).decorLevels as Record<string, number> | Map<string, number> | undefined;
-    const getLevel = (id: string) => {
-      if (!decorLevels) return 0;
-      if (decorLevels instanceof Map) return decorLevels.get(id) ?? 0;
-      return (decorLevels as Record<string, number>)[id] ?? 0;
-    };
-
-    // базовый декор — всегда немного лепестков и света, без эмодзи, всё сгенерировано CSS/картинками
-    const totalDecor = Object.values(decorLevels ?? {}).reduce((a: number, b: any) => a + (typeof b === 'number' ? b : 0), 0);
-    const baseCount = totalDecor > 0 ? 3 : 2;
-
-    for (let i = 0; i < baseCount; i++) {
-      const node = el('div', 'ambient-decor__item ambient-decor__petal');
-      node.style.left = `${10 + Math.random() * 80}%`;
-      node.style.top = `${5 + Math.random() * 85}%`;
-      node.style.animationDelay = `${Math.random() * 4}s`;
-      node.style.animationDuration = `${4 + Math.random() * 5}s`;
-      ambientDecor.append(node);
-    }
-
-    // если есть декор — добавляем больше сгенерированных элементов
-    if (getLevel('butterfly') > 0) {
-      for (let i = 0; i < getLevel('butterfly') + 1; i++) {
-        const node = el('div', 'ambient-decor__item ambient-decor__butterfly');
-        node.style.left = `${15 + Math.random() * 70}%`;
-        node.style.top = `${10 + Math.random() * 70}%`;
-        node.style.animationDelay = `${Math.random() * 3}s`;
-        ambientDecor.append(node);
-      }
-    }
-    if (getLevel('lantern') > 0) {
-      for (let i = 0; i < getLevel('lantern'); i++) {
-        const node = el('div', 'ambient-decor__item ambient-decor__sparkle');
-        node.style.left = `${20 + Math.random() * 60}%`;
-        node.style.top = `${15 + Math.random() * 60}%`;
-        node.style.animationDelay = `${Math.random() * 2}s`;
-        ambientDecor.append(node);
-      }
-    }
-    if (getLevel('birdhouse') > 0 || getLevel('windchime') > 0) {
-      const node = el('div', 'ambient-decor__item ambient-decor__glow');
-      node.style.left = '50%';
-      node.style.top = '8%';
-      ambientDecor.append(node);
-    }
-  }
-
   function render(): void {
     flushEvents();
     renderHud();
@@ -1272,7 +1266,6 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     renderGenerators();
     renderOrders();
     renderShop();
-    renderAmbientDecor();
   }
 
   // ------------------------------------------------------------- квартал / гербарий / декор / магазин / туториал
@@ -1320,10 +1313,20 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
     if (decor) return;
     closeAllOverlays();
     play('decor');
-    decor = mountDecor(root, game, () => {
-      decor?.destroy();
-      decor = null;
-    });
+    decor = mountDecor(
+      root,
+      game,
+      () => {
+        decor?.destroy();
+        decor = null;
+      },
+      // «Посмотреть на улице»: закрываем панель и открываем квартал
+      () => {
+        decor?.destroy();
+        decor = null;
+        openQuarter();
+      },
+    );
     decor.render();
   }
 
@@ -1370,19 +1373,14 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
         const level = game.upgradeLevel(upgrade.id);
         const cost = game.nextUpgradeCost(upgrade.id);
         const card = document.createElement('div');
-        card.className = 'quarter__tile';
-        card.style.padding = '12px';
-        if (cost === null) {
-          card.style.borderColor = '#9DBE9A';
-          card.style.background = 'linear-gradient(135deg,#FBF6EC,#E8F5E9)';
-        }
+        card.className = `panel-tile${cost === null ? ' panel-tile--max' : ''}`;
 
         const name = document.createElement('div');
-        name.className = 'quarter__name';
+        name.className = 'panel-tile__name';
         name.textContent = `${upgrade.name} ${level}/${upgrade.max_level}`;
 
         const effect = document.createElement('div');
-        effect.className = 'quarter__note';
+        effect.className = 'panel-tile__note';
         effect.textContent = upgrade.effect;
 
         const row = document.createElement('div');
@@ -1422,10 +1420,9 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
         }
 
         const lvlBar = document.createElement('div');
-        lvlBar.className = 'quarter__progress';
-        (lvlBar as HTMLElement).style.cssText = 'height:4px;background:#d5d0c4;border-radius:2px;overflow:hidden;margin-top:6px;';
-        const lvlFill = document.createElement('div');
-        (lvlFill as HTMLElement).style.cssText = `height:100%;background:linear-gradient(90deg,#9DBE9A,#7FA37D);width:${(level / upgrade.max_level) * 100}%;transition:width 0.4s ease;`;
+        lvlBar.className = 'panel-tile__bar';
+        const lvlFill = document.createElement('span');
+        lvlFill.style.width = `${(level / upgrade.max_level) * 100}%`;
         lvlBar.append(lvlFill);
 
         card.append(name, effect, row, lvlBar);
@@ -1458,15 +1455,11 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   decorButton.addEventListener('click', openDecor);
   shopButton.addEventListener('click', openShopOverlay);
 
-  // эмбиент — запускаем после первого взаимодействия если звук включён
-  let ambientStarted = false;
-  const tryStartAmbient = () => {
-    if (ambientStarted || isMuted()) return;
-    ambientStarted = true;
-    if (unlockAudio()) startAmbient();
-  };
-  root.addEventListener('pointerdown', tryStartAmbient, { once: true });
-  root.addEventListener('click', tryStartAmbient, { once: true });
+  // Звук готовим к работе по первому действию игрока: браузеры не дают
+  // запускать аудио раньше, а фонового эмбиента у нас больше нет.
+  const unlockOnce = () => unlockAudio();
+  root.addEventListener('pointerdown', unlockOnce, { once: true });
+  root.addEventListener('click', unlockOnce, { once: true });
 
   // ------------------------------------------------------------- служебное
   buildBoard();
@@ -1479,16 +1472,25 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
   }
 
   let resizeTimer: number | null = null;
-  const onResize = () => {
+  let resizeObserver: ResizeObserver | null = null;
+  const relayout = () => {
     if (resizeTimer) window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
       renderBoard();
       if (selected !== null && popup) {
         positionPopup(selected);
       }
-    }, 100) as unknown as number;
+    }, 60) as unknown as number;
   };
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', relayout);
+
+  // Доска реагирует и на изменение самого контейнера: панели, скроллбар,
+  // поворот экрана и мобильная адресная строка меняют высоту без resize окна.
+  if (typeof ResizeObserver !== 'undefined') {
+    const observer = new ResizeObserver(() => relayout());
+    observer.observe(boardWrap);
+    resizeObserver = observer;
+  }
   // ориентация мобилы
   window.addEventListener('orientationchange', () => {
     setTimeout(() => {
@@ -1534,7 +1536,8 @@ export function mountApp(root: HTMLElement, game: Game): AppHandle {
       tutorial?.render();
     },
     destroy() {
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', relayout);
+      resizeObserver?.disconnect();
       quarter?.destroy();
       herbarium?.destroy();
       decor?.destroy();
