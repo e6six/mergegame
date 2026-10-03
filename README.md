@@ -2,12 +2,12 @@
 
 ![CI](https://github.com/e6six/mergegame/actions/workflows/ci.yml/badge.svg)
 
-Браузерная игра: мердж цветов кормит тайкун цветочного магазина, который вырастает в квартал. Сессия 9-11 минут, вес 3.9MB, 63 теста зелёных.
+Браузерная игра: мердж цветов кормит тайкун цветочного магазина, который вырастает в квартал. Сессия 9-11 минут, вес 3.8MB, 67 тестов зелёных.
 
 **Платформа:** Yandex Games (HTML5) — сейчас играбельный билд без SDK (SDK отложен в крайнюю очередь)  
 **Жанр:** merge + idle/tycoon  
 **Стек:** TypeScript + Vite, рендер DOM + CSS спрайты, WebAudio синтез  
-**Статус:** ветка `arena/01a103b7-mergegame` от `main` d35860e, 76 спрайтов +2 фона =78 картинок в сборке, 81 файл, JS 84KB CSS 30KB, тесты 63/63
+**Статус:** ветка `arena/01a103b7-mergegame` от `main` d35860e, 76 спрайтов +2 фона =78 картинок в сборке, JS 84KB CSS 31KB, тесты 67/67
 
 ![board](screenshots/01-gameplay-board.png)
 
@@ -21,7 +21,7 @@
 
 ```bash
 tools/setup.sh   # поставить окружение (node_modules и tools/venv не сохраняются между сессиями)
-npm test         # 63 теста: board 11, game 23, session 6, app 16, tutorial 3, audio 4 — должны быть зелёными
+npm test         # 67 тестов: board 11, game 23, session 6, app 20, tutorial 3, audio 4 — должны быть зелёными
 npm run build    # прод-сборка в dist/ — проверка: index.html в корне, без кириллицы, 3.9MB <100MB, 78 картинок
 npm run dev      # http://localhost:5173 — играбельная сборка, drag&drop работает
 npm run measure  # 24 сессии ботом по реальному коду: печатает заказы/клики/поле по сидам
