@@ -1,0 +1,53 @@
+{
+  "note": "Худший случай для проверки различимости: предметы цепочки «Упаковка» стоят рядом друг с другом, а рядом — цветы и растение. Именно так они и будут соседствовать на доске.",
+  "place": [
+    { "id": "pack-01", "col": 0, "row": 0 },
+    { "id": "pack-01", "col": 1, "row": 0 },
+    { "id": "pack-02", "col": 2, "row": 0 },
+    { "id": "pack-05", "col": 3, "row": 0 },
+    { "id": "rose-02", "col": 4, "row": 0 },
+    { "id": "wild-01", "col": 5, "row": 0 },
+
+    { "id": "pack-03", "col": 0, "row": 1 },
+    { "id": "pack-03", "col": 1, "row": 1 },
+    { "id": "pack-04", "col": 2, "row": 1 },
+    { "id": "pack-06", "col": 3, "row": 1 },
+    { "id": "rose-03", "col": 4, "row": 1 },
+    { "id": "wild-02", "col": 5, "row": 1 },
+
+    { "id": "pack-07", "col": 0, "row": 2 },
+    { "id": "pack-08", "col": 1, "row": 2 },
+    { "id": "pack-09", "col": 2, "row": 2 },
+    { "id": "exotic-01", "col": 3, "row": 2 },
+    { "id": "exotic-06", "col": 4, "row": 2 },
+    { "id": "rose-04", "col": 5, "row": 2 },
+
+    { "id": "pack-02", "col": 0, "row": 3 },
+    { "id": "pack-04", "col": 1, "row": 3 },
+    { "id": "pack-06", "col": 2, "row": 3 },
+    { "id": "pack-07", "col": 3, "row": 3 },
+    { "id": "pack-08", "col": 4, "row": 3 },
+    { "id": "pack-09", "col": 5, "row": 3 },
+
+    { "id": "pack-01", "col": 0, "row": 4 },
+    { "id": "pack-02", "col": 1, "row": 4 },
+    { "id": "pack-03", "col": 2, "row": 4 },
+    { "id": "pack-04", "col": 3, "row": 4 },
+    { "id": "pack-05", "col": 4, "row": 4 },
+    { "id": "pack-06", "col": 5, "row": 4 },
+
+    { "id": "exotic-03", "col": 0, "row": 5 },
+    { "id": "wild-05", "col": 1, "row": 5 },
+    { "id": "rose-06", "col": 2, "row": 5 },
+    { "id": "wild-06", "col": 3, "row": 5 },
+    { "id": "exotic-05", "col": 4, "row": 5 },
+    { "id": "rose-05", "col": 5, "row": 5 },
+
+    { "id": "rose-01", "col": 0, "row": 6 },
+    { "id": "rose-01", "col": 1, "row": 6 },
+    { "id": "rose-01", "col": 2, "row": 6 },
+    { "id": "wild-01", "col": 3, "row": 6 },
+    { "id": "wild-01", "col": 4, "row": 6 },
+    { "id": "exotic-02", "col": 5, "row": 6 }
+  ]
+}

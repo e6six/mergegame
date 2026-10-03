@@ -1,0 +1,238 @@
+{
+  "version": 1,
+  "note": "Промпты, которыми сгенерированы ассеты. Файл дополняет art/manifest.json: там лежат subjects и состав пакета, здесь — шаблоны промптов, история переделок и причина каждой переделки. Полный текст промптов для каждого ассета собирается командой `node tools/render-prompts.mjs` в art/prompts.md.",
+  "styleReference": {
+    "file": "art/style-test/flowershop-keyart.png",
+    "usage": "Передавался в КАЖДЫЙ запрос генерации как референс стиля (параметр images). Это главный инструмент консистентности — важнее словесного описания."
+  },
+  "generationLimits": "10 изображений за один ход генерации — пакет собирался партиями. Очередь партии печатает tools/next-batch.py по манифесту.",
+
+  "templates": {
+    "item": "Isolated single {SUBJECT}, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters.",
+    "building": "Isolated single {SUBJECT}, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, building fully inside the frame with generous margin, no cast shadow on ground, no other buildings, no people, no text, no letters.",
+    "uiIcon": "Isolated single {SUBJECT}, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, {PALETTE}, clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, icon fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters."
+  },
+
+  "paletteOverrides": {
+    "gold": "pastel palette with gold accents (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63)",
+    "darkAccents": "pastel palette with dark accents (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, gold)",
+    "terracotta": "pastel palette plus terracotta red accent (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, terracotta #C4674F)",
+    "navy": "pastel palette plus deep navy blue accent (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, navy #34435E)",
+    "warmGold": "warm gold and cream palette"
+  },
+
+  "whyRegenerated": {
+    "pack-cream-monotony": "Цепочка «Упаковка» в первой версии состояла из ёмкостей одной кремово-деревянной гаммы. Замер насыщенности дал 0.21-0.28 у 6 уровней из 9 — на доске в 76 px они сливались в одно пятно. Перегенерация развела уровни по цвету И силуэту.",
+    "pack-tiered-stands": "Три уровня (7, 8, 9) вышли тремя похожими деревянными этажерками — генератор проигнорировал требование развести их. Понадобилась смена материала и силуэта, а не только цвета.",
+    "rose-arch-mirror": "«Цветочная арка» (rose-09) в мелком превью читалась как зеркало: просвет между опорами не был явно пустым. Помогло явное «completely open in the middle, no glass, no mirror»."
+  },
+
+  "assets": [
+    {
+      "id": "rose-09",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "grand round flower arch decorated with pink roses and greenery on a wooden stand",
+          "verdict": "переделан: в превью читалась как зеркало, а не как арка"
+        },
+        {
+          "subject": "freestanding arch-shaped trellis made of thin curved wooden laths standing on two wooden posts, completely open in the middle with clearly empty space inside the arch opening, densely covered on its frame with pink roses, cream flowers and green leaves, no glass, no mirror, no reflective surface",
+          "verdict": "принят"
+        }
+      ]
+    },
+    {
+      "id": "rose-10",
+      "template": "item",
+      "subject": "legendary single black rose with deep crimson-black velvet petals and a thin gold ribbon tied on the stem",
+      "palette": "darkAccents",
+      "verdict": "принят с первого раза"
+    },
+    {
+      "id": "wild-10",
+      "template": "item",
+      "subject": "legendary golden wildflower arrangement of sunflowers and golden wheat with a soft warm glow and a thin gold ribbon",
+      "verdict": "первая попытка не прошла генерацию, повторная принята"
+    },
+    {
+      "id": "exotic-10",
+      "template": "item",
+      "subject": "legendary bird of paradise flower with iridescent orange and blue petals, gold accents and a subtle glow",
+      "verdict": "принят"
+    },
+    {
+      "id": "pack-02",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "spool of cream satin ribbon with a loose bow",
+          "verdict": "переделан: кремовая гамма сливалась с pack-01 и pack-03"
+        },
+        {
+          "subject": "spool of dusty pink satin ribbon with a loose bow",
+          "verdict": "принят"
+        }
+      ]
+    },
+    {
+      "id": "pack-03",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "small cream ceramic vase with a fluted neck, empty",
+          "verdict": "переделан: кремовая гамма"
+        },
+        {
+          "subject": "kraft paper gift bag with cream tissue paper sticking out and a small pink ribbon handle",
+          "verdict": "принят: крафтовый пакет вместо вазы — другой силуэт и цвет"
+        }
+      ]
+    },
+    {
+      "id": "pack-05",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "painted terracotta planter decorated with a simple hand-painted floral pattern, empty",
+          "verdict": "переделан: кремово-терракотовая гамма"
+        },
+        {
+          "subject": "turquoise glazed ceramic vase with a fluted neck, empty",
+          "verdict": "принят: бирюзовая ваза читается сразу"
+        }
+      ]
+    },
+    {
+      "id": "pack-06",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "sturdy wooden crate made of pale slats, empty",
+          "verdict": "переделан: почти не отличался от pack-04 (корзина) и pack-01 (бумага)"
+        },
+        {
+          "subject": "wooden crate with painted sage green panels and a small floral stencil on the front, empty",
+          "verdict": "принят"
+        }
+      ]
+    },
+    {
+      "id": "pack-07",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "small wooden tiered display stand with two shelves, empty",
+          "verdict": "переделан: не отличался от pack-08 и pack-09"
+        },
+        {
+          "subject": "small wooden tiered display stand with two shelves holding two small potted plants and a sprig of lavender",
+          "verdict": "переделан: остался деревянной этажеркой"
+        },
+        {
+          "subject": "small wooden handcart with two large spoked wheels painted terracotta red, carrying a wicker basket of dried flowers",
+          "palette": "terracotta",
+          "verdict": "принят: смена силуэта (тележка) и цвета колёс"
+        }
+      ]
+    },
+    {
+      "id": "pack-08",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "elegant empty glass display cabinet with a wooden frame and a curved top, no contents inside",
+          "verdict": "переделан: не отличался от pack-07 и pack-09"
+        },
+        {
+          "subject": "deep navy blue painted metal plant stand with three shelves holding small potted plants and a watering can",
+          "palette": "navy",
+          "verdict": "принят: металл и тёмно-синий цвет"
+        }
+      ]
+    },
+    {
+      "id": "pack-09",
+      "template": "item",
+      "attempts": [
+        {
+          "subject": "tall ornate wooden flower stand with carved legs and three empty levels",
+          "verdict": "переделан"
+        },
+        {
+          "subject": "tall gilded golden display cabinet with a domed top, ornate carved floral details and glass doors, no contents inside",
+          "palette": "gold",
+          "verdict": "принят: золото и купол"
+        }
+      ]
+    },
+    {
+      "id": "pack-10",
+      "template": "item",
+      "subject": "luxurious gift set: a cream gift box with a large dusty pink satin bow, a folded kraft paper sheet and a small bunch of dried lavender laid beside it",
+      "verdict": "принят"
+    },
+    {
+      "id": "tools-10",
+      "template": "item",
+      "subject": "legendary golden gardening tool set: golden shears and a golden trowel crossed over a golden watering can, all with ornate engraved floral handles, surrounded by a subtle warm glow",
+      "palette": "gold",
+      "verdict": "принят"
+    },
+    {
+      "id": "ui-energy",
+      "template": "uiIcon",
+      "subject": "glossy green leaf game icon with a rounded friendly shape and a subtle dewdrop highlight, game UI icon style with clean edges",
+      "palette": "sage green and cream palette",
+      "verdict": "принят"
+    },
+    {
+      "id": "ui-coin",
+      "template": "uiIcon",
+      "subject": "shiny golden game coin with a small pink flower embossed on its face, glossy game UI icon style with clean edges",
+      "palette": "warmGold",
+      "verdict": "принят"
+    },
+    {
+      "id": "ui-rep",
+      "template": "uiIcon",
+      "subject": "round bronze badge game icon with a tiny cottage and a small flower embossed on its face, game UI icon style with clean edges",
+      "palette": "bronze, sage green and cream palette",
+      "verdict": "принят"
+    },
+    {
+      "id": "ui-locked",
+      "template": "uiIcon",
+      "subject": "small locked garden plot marker: a short wooden peg with a tiny padlock and a few dry twigs, game UI icon style with clean edges",
+      "palette": "sage green, cream and warm wood palette",
+      "verdict": "принят. Добавлен сверх манифеста: нужна метка закрытой клетки вместо эмодзи"
+    }
+  ],
+
+  "backgrounds": [
+    {
+      "id": "stage-board",
+      "file": "art/backgrounds/stage-board.jpg",
+      "prompt": "Soft muted background for a puzzle board game screen: a weathered pale wooden workbench top seen directly from above, very low contrast, small scattered fallen petals in the corners, gentle warm light from the upper left, no objects, no tools, no flowers in the middle, plenty of calm empty space in the center, cozy painterly storybook style, pastel palette (pale wood #D8C3A5, cream #F3EADB, sage green accents #9DBE9A), no text, no letters, wide composition.",
+      "processing": "Не вырезается: занимает кадр целиком. Ужимается до 1024 px по ширине и сохраняется в JPEG (quality 82) — для мягких текстур это в разы легче PNG. Итог 66 КБ.",
+      "verdict": "принят"
+    },
+    {
+      "id": "stage-quarter",
+      "file": "art/backgrounds/stage-quarter.jpg",
+      "prompt": "Wide cozy illustration of a small European quarter street at golden hour, seen from a slightly elevated 3/4 view: a flower shop with a cream and sage striped awning on the left, a small coffee house with a daisy sign next to it, a bakery, a craftsman workshop, a glass orangery pavilion and a festive flower pavilion further down the cobblestone street, lanterns, wooden crates with flowers, vines on the walls, soft warm light, no people, no text, no letters, no logos, cozy painterly storybook style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4).",
+      "processing": "Не вырезается. Ужимается до 1600 px по ширине, JPEG quality 84. Итог 321 КБ.",
+      "verdict": "принят. На фоне видны все шесть зданий квартала — совпадает с составом bld-* "
+    }
+  ],
+
+  "promptEngineering": [
+    "Всегда передавать flowershop-keyart.png как референс: слова «matching the reference art style» без картинки не работают.",
+    "Однотонный светло-серый фон + требование «plain flat uniform light gray background filling the entire frame» — тогда tools/cutout.py вырезает предмет без остатков.",
+    "«no cast shadow on ground» обязательно: тень на полу создаёт размытый ореол, который не отделяется от фона.",
+    "«no text, no letters» обязательно: генератор любит добавлять подписи, которые потом приходится вырезать.",
+    "Лестницу цепочки описывать как РАЗНЫЕ предметы (бутон → букет → корзина → арка), а не «то же, но больше»: разные объекты генератор рисует консистентно, масштабирование одного — нет.",
+    "Для верхних уровней добавлять «legendary ... with a soft warm glow» и менять палитру (золото, тёмные акценты) — это визуально выделяет редкое.",
+    "Когда уровни сливаются — менять не только цвет, но и материал/силуэт (дерево → металл → золото), иначе генератор повторит форму."
+  ]
+}

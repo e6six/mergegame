@@ -1,0 +1,52 @@
+{
+  "note": "Типичная середина сессии: часть поля занята группами под слияние, часть — готовыми предметами под заказы. По этому макету проверяется, читается ли доска при плотной застройке.",
+  "place": [
+    { "id": "rose-01", "col": 0, "row": 0 },
+    { "id": "rose-01", "col": 1, "row": 0 },
+    { "id": "rose-01", "col": 2, "row": 0 },
+    { "id": "wild-01", "col": 3, "row": 0 },
+    { "id": "wild-01", "col": 4, "row": 0 },
+    { "id": "pack-01", "col": 5, "row": 0 },
+
+    { "id": "rose-02", "col": 0, "row": 1 },
+    { "id": "rose-02", "col": 1, "row": 1 },
+    { "id": "wild-02", "col": 2, "row": 1 },
+    { "id": "wild-02", "col": 3, "row": 1 },
+    { "id": "pack-02", "col": 4, "row": 1 },
+    { "id": "tools-01", "col": 5, "row": 1 },
+
+    { "id": "rose-03", "col": 0, "row": 2 },
+    { "id": "rose-04", "col": 1, "row": 2 },
+    { "id": "wild-03", "col": 2, "row": 2 },
+    { "id": "wild-04", "col": 3, "row": 2 },
+    { "id": "pack-03", "col": 4, "row": 2 },
+    { "id": "tools-02", "col": 5, "row": 2 },
+
+    { "id": "exotic-01", "col": 0, "row": 3 },
+    { "id": "exotic-02", "col": 1, "row": 3 },
+    { "id": "rose-05", "col": 2, "row": 3 },
+    { "id": "wild-05", "col": 3, "row": 3 },
+    { "id": "pack-04", "col": 4, "row": 3 },
+    { "id": "tools-03", "col": 5, "row": 3 },
+
+    { "id": "rose-01", "col": 0, "row": 4 },
+    { "id": "rose-01", "col": 1, "row": 4 },
+    { "id": "rose-01", "col": 2, "row": 4 },
+    { "id": "rose-01", "col": 3, "row": 4 },
+    { "id": "rose-01", "col": 4, "row": 4 },
+    { "id": "wild-01", "col": 5, "row": 4 },
+
+    { "id": "wild-01", "col": 0, "row": 5 },
+    { "id": "wild-01", "col": 1, "row": 5 },
+    { "id": "wild-01", "col": 2, "row": 5 },
+    { "id": "exotic-06", "col": 3, "row": 5 },
+    { "id": "tools-07", "col": 4, "row": 5 },
+    { "id": "pack-09", "col": 5, "row": 5 },
+
+    { "id": "rose-10", "col": 0, "row": 6 },
+    { "id": "wild-10", "col": 1, "row": 6 },
+    { "id": "exotic-10", "col": 2, "row": 6 },
+    { "id": "tools-10", "col": 3, "row": 6 },
+    { "id": "pack-10", "col": 4, "row": 6 }
+  ]
+}

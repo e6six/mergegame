@@ -1,0 +1,449 @@
+{
+  "version": 2,
+  "note": "Манифест арт-пакета. Промпт = promptSuffix с подстановкой subject, референс стиля = art/style-test/flowershop-keyart.png. После генерации: .venv/bin/python tools/cutout.py art/raw/<id>.png --outdir art/sprites, затем tools/check-sprites.py. Все цепочки — по 10 уровней.",
+  "style": {
+    "referenceArt": "art/style-test/flowershop-keyart.png",
+    "palette": {
+      "sage": "#9DBE9A",
+      "sage_shadow": "#7FA37D",
+      "cream": "#F3EADB",
+      "cream_light": "#FBF6EC",
+      "wood": "#C89A63",
+      "wood_shadow": "#A97544",
+      "rose": "#E98C9B",
+      "rose_deep": "#D2576C",
+      "warm_light": "#F7D9A0",
+      "lavender": "#A99BD4",
+      "foliage": "#6E9B5F",
+      "foliage_light": "#9CC47F",
+      "daisy": "#FBF6EC",
+      "stone": "#D8CDBE",
+      "metal": "#3B4046"
+    },
+    "promptSuffix": "Isolated single {SUBJECT}, centered, soft 3/4 view, cozy painterly storybook illustration matching the reference art style, pastel palette (sage green #9DBE9A, cream #F3EADB, dusty rose #E98C9B, warm wood #C89A63, lavender #A99BD4), clean readable silhouette, warm light from upper left, plain flat uniform light gray background filling the entire frame, object fully inside the frame with generous margin, no cast shadow on ground, no other objects, no people, no text, no letters."
+  },
+  "progress": {
+    "done": [
+      "5 цепочек по 10 уровней (50 предметов)",
+      "3 генератора (gen-bed-01..03)",
+      "6 зданий (bld-flowershop, bld-coffee, bld-bakery, bld-workshop, bld-greenhouse, bld-pavilion)",
+      "иконки ui-coin, ui-energy, ui-rep, ui-locked",
+      "фоны stage-board.jpg (доска), stage-quarter.jpg (квартал)"
+    ],
+    "assets": {
+      "sprites": 63,
+      "backgrounds": 2,
+      "qa": "63/63 без брака"
+    },
+    "note": "арт-пакет MVP закрыт. Дальше: звук, анимации, сезонные цепочки событий"
+  },
+  "chains": [
+    {
+      "id": "rose",
+      "name": "Роза",
+      "role": "базовая цепочка, открыта с самого начала",
+      "status": "готово",
+      "items": [
+        {
+          "id": "rose-01",
+          "level": 1,
+          "name": "Бутон розы",
+          "subject": "closed pink rosebud on a short green stem with two small leaves"
+        },
+        {
+          "id": "rose-02",
+          "level": 2,
+          "name": "Роза",
+          "subject": "single fully bloomed dusty-pink rose with stem and two leaves"
+        },
+        {
+          "id": "rose-03",
+          "level": 3,
+          "name": "Три розы",
+          "subject": "small posy of three pink roses tied with a cream ribbon"
+        },
+        {
+          "id": "rose-04",
+          "level": 4,
+          "name": "Букет в бумаге",
+          "subject": "bouquet of pink roses wrapped in a cone of kraft paper"
+        },
+        {
+          "id": "rose-05",
+          "level": 5,
+          "name": "Корзина роз",
+          "subject": "wicker basket filled with pink and cream roses"
+        },
+        {
+          "id": "rose-06",
+          "level": 6,
+          "name": "Композиция в вазе",
+          "subject": "rose arrangement in a cream ceramic vase"
+        },
+        {
+          "id": "rose-07",
+          "level": 7,
+          "name": "Свадебный букет",
+          "subject": "wedding bouquet of white and blush roses with eucalyptus sprigs and a trailing ribbon"
+        },
+        {
+          "id": "rose-08",
+          "level": 8,
+          "name": "Арт-бокс",
+          "subject": "elegant round hat-box flower arrangement of pink roses with a satin ribbon"
+        },
+        {
+          "id": "rose-09",
+          "level": 9,
+          "name": "Цветочная арка",
+          "subject": "freestanding arch-shaped trellis of thin curved wood on two posts, densely covered with pink roses and green leaves, completely open in the middle with nothing inside the arch opening, no glass, no reflective surface"
+        },
+        {
+          "id": "rose-10",
+          "level": 10,
+          "name": "Чёрная роза",
+          "subject": "legendary single black rose with deep crimson-black velvet petals and a thin gold ribbon tied on the stem"
+        }
+      ]
+    },
+    {
+      "id": "wild",
+      "name": "Полевые",
+      "role": "массовая дешёвая цепочка, открывается с кофейней",
+      "items": [
+        {
+          "id": "wild-01",
+          "level": 1,
+          "name": "Ромашка",
+          "subject": "single white daisy with a yellow center on a green stem"
+        },
+        {
+          "id": "wild-02",
+          "level": 2,
+          "name": "Пучок ромашек",
+          "subject": "small bunch of white daisies tied with rough twine"
+        },
+        {
+          "id": "wild-03",
+          "level": 3,
+          "name": "Венок",
+          "subject": "delicate flower crown woven from daisies and small white blossoms"
+        },
+        {
+          "id": "wild-04",
+          "level": 4,
+          "name": "Сноп полевых",
+          "subject": "sheaf of mixed wildflowers: cornflowers, red poppies and daisies, tied with a straw band"
+        },
+        {
+          "id": "wild-05",
+          "level": 5,
+          "name": "Кашпо с полевыми",
+          "subject": "terracotta pot filled with wildflowers and grasses"
+        },
+        {
+          "id": "wild-06",
+          "level": 6,
+          "name": "Лукошко",
+          "subject": "shallow wicker trug filled with wildflowers and cornflowers"
+        },
+        {
+          "id": "wild-07",
+          "level": 7,
+          "name": "Сухоцвет",
+          "subject": "hanging bundle of dried wildflowers in muted warm wheat and lavender tones"
+        },
+        {
+          "id": "wild-08",
+          "level": 8,
+          "name": "Полевой букет",
+          "subject": "large rustic bouquet of wildflowers wrapped in burlap and tied with twine"
+        },
+        {
+          "id": "wild-09",
+          "level": 9,
+          "name": "Луг в ящике",
+          "subject": "long wooden planter box containing a miniature meadow of wildflowers and grasses"
+        },
+        {
+          "id": "wild-10",
+          "level": 10,
+          "name": "Золотой луг",
+          "subject": "legendary golden wildflower arrangement of sunflowers and golden wheat with a soft warm glow and thin gold ribbon"
+        }
+      ]
+    },
+    {
+      "id": "exotic",
+      "name": "Экзотика",
+      "role": "дорогая редкая цепочка, открывается с оранжереей",
+      "items": [
+        {
+          "id": "exotic-01",
+          "level": 1,
+          "name": "Суккулент",
+          "subject": "small green succulent in a tiny terracotta pot"
+        },
+        {
+          "id": "exotic-02",
+          "level": 2,
+          "name": "Орхидея",
+          "subject": "single white orchid in a small ceramic pot"
+        },
+        {
+          "id": "exotic-03",
+          "level": 3,
+          "name": "Цветущий кактус",
+          "subject": "round flowering cactus with a pink blossom in a terracotta pot"
+        },
+        {
+          "id": "exotic-04",
+          "level": 4,
+          "name": "Орхидея в кашпо",
+          "subject": "tall purple orchid in a decorative glazed pot"
+        },
+        {
+          "id": "exotic-05",
+          "level": 5,
+          "name": "Монстера",
+          "subject": "potted monstera plant with large split leaves in a woven basket"
+        },
+        {
+          "id": "exotic-06",
+          "level": 6,
+          "name": "Бонсай",
+          "subject": "small bonsai tree in a shallow ceramic tray with moss"
+        },
+        {
+          "id": "exotic-07",
+          "level": 7,
+          "name": "Тропическая композиция",
+          "subject": "tropical flower arrangement with a bird of paradise flower and broad leaves in a tall vase"
+        },
+        {
+          "id": "exotic-08",
+          "level": 8,
+          "name": "Пальма в кадке",
+          "subject": "tall potted palm tree in a wooden barrel planter"
+        },
+        {
+          "id": "exotic-09",
+          "level": 9,
+          "name": "Оранжерейный гигант",
+          "subject": "huge exotic plant with giant glossy leaves and hanging blossoms in an ornate stone planter"
+        },
+        {
+          "id": "exotic-10",
+          "level": 10,
+          "name": "Райская птица",
+          "subject": "legendary bird of paradise flower with iridescent orange and blue petals, gold accents and a subtle glow"
+        }
+      ]
+    },
+    {
+      "id": "pack",
+      "name": "Упаковка",
+      "role": "служебная цепочка, расходник для заказов",
+      "items": [
+        {
+          "id": "pack-01",
+          "level": 1,
+          "name": "Бумага",
+          "subject": "roll of kraft wrapping paper with a loose sheet curling out"
+        },
+        {
+          "id": "pack-02",
+          "level": 2,
+          "name": "Розовая лента",
+          "subject": "spool of cream satin ribbon with a loose bow"
+        },
+        {
+          "id": "pack-03",
+          "level": 3,
+          "name": "Подарочный пакет",
+          "subject": "small cream ceramic vase with a fluted neck"
+        },
+        {
+          "id": "pack-04",
+          "level": 4,
+          "name": "Корзина",
+          "subject": "empty wicker basket with an arched handle"
+        },
+        {
+          "id": "pack-05",
+          "level": 5,
+          "name": "Бирюзовая ваза",
+          "subject": "painted terracotta planter decorated with a simple floral pattern"
+        },
+        {
+          "id": "pack-06",
+          "level": 6,
+          "name": "Расписной ящик",
+          "subject": "sturdy wooden crate made of pale slats"
+        },
+        {
+          "id": "pack-07",
+          "level": 7,
+          "name": "Ручная тележка",
+          "subject": "small wooden tiered display stand with two shelves"
+        },
+        {
+          "id": "pack-08",
+          "level": 8,
+          "name": "Этажерка с цветами",
+          "subject": "elegant glass display cabinet with a wooden frame and a curved top"
+        },
+        {
+          "id": "pack-09",
+          "level": 9,
+          "name": "Золочёная витрина",
+          "subject": "tall ornate wooden flower stand with carved legs and three levels"
+        },
+        {
+          "id": "pack-10",
+          "level": 10,
+          "name": "Подарочный набор",
+          "subject": "legendary gilded display stand with carved flowers along the frame and a soft warm glow"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "Инструменты",
+      "role": "служебная цепочка, отсюда выпадают бусты и ускорители",
+      "items": [
+        {
+          "id": "tools-01",
+          "level": 1,
+          "name": "Секатор",
+          "subject": "gardening pruning shears with wooden handles"
+        },
+        {
+          "id": "tools-02",
+          "level": 2,
+          "name": "Лейка",
+          "subject": "sage green watering can with a long spout"
+        },
+        {
+          "id": "tools-03",
+          "level": 3,
+          "name": "Опрыскиватель",
+          "subject": "small glass plant mister with a brass pump"
+        },
+        {
+          "id": "tools-04",
+          "level": 4,
+          "name": "Перчатки",
+          "subject": "pair of canvas gardening gloves with leather cuffs and a small flower print"
+        },
+        {
+          "id": "tools-05",
+          "level": 5,
+          "name": "Лопатка",
+          "subject": "small garden trowel with a wooden handle and a steel blade"
+        },
+        {
+          "id": "tools-06",
+          "level": 6,
+          "name": "Тачка",
+          "subject": "wooden wheelbarrow with a single front wheel filled with soil"
+        },
+        {
+          "id": "tools-07",
+          "level": 7,
+          "name": "Тепличка",
+          "subject": "small glass cold frame with a wooden frame and tiny seedlings inside"
+        },
+        {
+          "id": "tools-08",
+          "level": 8,
+          "name": "Набор инструментов",
+          "subject": "gardener's tool set arranged in an open wooden box with brass fittings"
+        },
+        {
+          "id": "tools-09",
+          "level": 9,
+          "name": "Тележка",
+          "subject": "sturdy garden cart with shelves holding pots, tools and a watering can"
+        },
+        {
+          "id": "tools-10",
+          "level": 10,
+          "name": "Золотые инструменты",
+          "subject": "legendary golden gardening tool set with ornate engraved handles and a soft warm glow"
+        }
+      ]
+    }
+  ],
+  "generators": [
+    {
+      "id": "gen-bed-01",
+      "name": "Грядка",
+      "subject": "wooden garden bed filled with dark soil and small green seedlings"
+    },
+    {
+      "id": "gen-bed-02",
+      "name": "Теплица",
+      "subject": "small glass greenhouse with a wooden frame and young plants on shelves inside"
+    },
+    {
+      "id": "gen-bed-03",
+      "name": "Оранжерея",
+      "subject": "tall ornate glass greenhouse pavilion filled with lush green plants"
+    }
+  ],
+  "buildings": [
+    {
+      "id": "bld-flowershop",
+      "name": "Цветочная лавка",
+      "subject": "charming small flower shop on a street corner with a cream and sage striped awning and wooden flower crates on the sidewalk"
+    },
+    {
+      "id": "bld-coffee",
+      "name": "Кофейня «Ромашка»",
+      "subject": "cozy small coffee house with a daisy-shaped sign and one outdoor table with two chairs"
+    },
+    {
+      "id": "bld-bakery",
+      "name": "Пекарня",
+      "subject": "warm bakery shopfront with baguettes in the window and a round loaf sign"
+    },
+    {
+      "id": "bld-workshop",
+      "name": "Мастерская декора",
+      "subject": "small craftsman workshop with wooden planks, hanging tools and potted plants by the door"
+    },
+    {
+      "id": "bld-greenhouse",
+      "name": "Оранжерея",
+      "subject": "large elegant glass orangery pavilion filled with exotic plants"
+    },
+    {
+      "id": "bld-pavilion",
+      "name": "Павильон на площади",
+      "subject": "festive open-air pavilion with flower garlands and striped canopy"
+    }
+  ],
+  "ui": [
+    {
+      "id": "ui-energy",
+      "name": "Энергия",
+      "subject": "glossy green leaf icon with a rounded friendly shape, game UI icon"
+    },
+    {
+      "id": "ui-coin",
+      "name": "Монеты",
+      "subject": "shiny golden coin with a small flower embossed on its face, game UI icon"
+    },
+    {
+      "id": "ui-rep",
+      "name": "Репутация",
+      "subject": "round bronze badge with a tiny house and a flower embossed on it, game UI icon"
+    }
+  ],
+  "balance": {
+    "source": "data/balance.json",
+    "report": "docs/balance-report.md",
+    "simulator": "tools/simulate.py (tools/py tools/simulate.py --days 30 --sessions 4 --seed 7)"
+  }
+}
