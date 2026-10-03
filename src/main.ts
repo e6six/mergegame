@@ -46,49 +46,60 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // --------------------------------------------------------- отладочная панель
-// Всегда показываем пока идёт разработка, уберём по команде пользователя
-const dev = document.createElement('div');
-dev.className = 'dev';
-dev.append(Object.assign(document.createElement('div'), { textContent: `Отладка · спрайтов ${spriteCount}` }));
-const devRow = (label: string, action: () => void) => {
-  const button = document.createElement('button');
-  button.className = 'button';
-  button.textContent = label;
-  button.addEventListener('click', () => {
-    action();
-    app.render();
-  });
-  return button;
-};
-const row1 = document.createElement('div');
-row1.className = 'dev__row';
-row1.append(
-  devRow('+1000 монет', () => {
-    game.coins += 1000;
-  }),
-  devRow('+100 энергии', () => {
-    game.addEnergy(100);
-  }),
-  devRow('+100 репутации', () => {
-    game.reputation += 100;
-  }),
-);
-const row2 = document.createElement('div');
-row2.className = 'dev__row';
-row2.append(
-  devRow('+1 день', () => {
-    game.startedAt -= 24 * 60 * 60 * 1000;
-    game.tick();
-  }),
-  devRow('Сбросить', () => {
-    clear();
-    const fresh = new Game();
-    game.restore(fresh.serialize());
-    game.tick();
-  }),
-);
-dev.append(row1, row2);
-root.append(dev);
+// Панель с читами нужна только при разработке и проверке баланса. В обычной
+// игре её быть не должно: игрок не обязан видеть «+1000 монет» в углу.
+// Включается адресом с ?debug=1 — в том числе на площадке, если понадобится.
+const devEnabled =
+  typeof location !== 'undefined' && new URLSearchParams(location.search).get('debug') === '1';
+
+if (devEnabled) {
+  const dev = document.createElement('div');
+  dev.className = 'dev';
+  dev.append(
+    Object.assign(document.createElement('div'), {
+      textContent: `Отладка · спрайтов ${spriteCount}`,
+    }),
+  );
+  const devRow = (label: string, action: () => void) => {
+    const button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = label;
+    button.addEventListener('click', () => {
+      action();
+      app.render();
+    });
+    return button;
+  };
+  const row1 = document.createElement('div');
+  row1.className = 'dev__row';
+  row1.append(
+    devRow('+1000 монет', () => {
+      game.coins += 1000;
+    }),
+    devRow('+100 энергии', () => {
+      game.addEnergy(100);
+    }),
+    devRow('+100 репутации', () => {
+      game.reputation += 100;
+    }),
+  );
+  const row2 = document.createElement('div');
+  row2.className = 'dev__row';
+  row2.append(
+    devRow('+1 день', () => {
+      game.startedAt -= 24 * 60 * 60 * 1000;
+      game.tick();
+    }),
+    devRow('Сбросить', () => {
+      clear();
+      const fresh = new Game();
+      game.restore(fresh.serialize());
+      game.tick();
+    }),
+  );
+  dev.append(row1, row2);
+  root.append(dev);
+}
 
 // Экспорт для отладки в консоли и для тестов сценариев
 declare global {

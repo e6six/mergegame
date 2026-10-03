@@ -63,7 +63,7 @@ export class Game {
   constructor(rng: Rng = defaultRng()) {
     this.rng = rng;
     for (const upgrade of BALANCE.upgrades) this.levels[upgrade.id] = 0;
-    const decor = (BALANCE as any).decor as { id: string }[] | undefined;
+    const decor = BALANCE.decor;
     if (decor) {
       for (const d of decor) this.decorLevels[d.id] = 0;
     }
@@ -77,7 +77,7 @@ export class Game {
   }
 
   get decorEffects(): { incomeBonus: number; energyBonus: number; rareBonus: number; repBonus: number; passiveBonus: number } {
-    const decorCfg = (BALANCE as any).decor as any[] | undefined;
+    const decorCfg = BALANCE.decor;
     if (!decorCfg) return { incomeBonus: 0, energyBonus: 0, rareBonus: 0, repBonus: 0, passiveBonus: 0 };
     let income = 0;
     let energy = 0;
@@ -110,7 +110,7 @@ export class Game {
   }
 
   get herbariumBonus(): number {
-    const herbCfg = (BALANCE as any).herbarium as any | undefined;
+    const herbCfg = BALANCE.herbarium;
     if (!herbCfg) return 0;
     const species = this.herbarium.size;
     const chainCompleteBonus = this.completedChainsCount() * herbCfg.bonus_per_chain_complete;
@@ -180,7 +180,7 @@ export class Game {
   }
 
   nextDecorCost(id: string): number | null {
-    const decorCfg = (BALANCE as any).decor as any[] | undefined;
+    const decorCfg = BALANCE.decor;
     if (!decorCfg) return null;
     const def = decorCfg.find((d) => d.id === id);
     if (!def) return null;
@@ -190,7 +190,7 @@ export class Game {
   }
 
   buyDecor(id: string): boolean {
-    const decorCfg = (BALANCE as any).decor as any[] | undefined;
+    const decorCfg = BALANCE.decor;
     if (!decorCfg) return false;
     const def = decorCfg.find((d) => d.id === id);
     const cost = this.nextDecorCost(id);
@@ -366,7 +366,7 @@ export class Game {
   }
 
   calcReputationReward(order: Order): number {
-    const repCfg = (BALANCE as any).reputation as any | undefined;
+    const repCfg = BALANCE.reputation;
     if (!repCfg) return 1;
     let rep = repCfg.per_order_base;
     for (const need of order.needs) {
@@ -474,7 +474,7 @@ export class Game {
     this.levels = { ...save.levels };
     this.decorLevels = (save as any).decorLevels ?? {};
     // мигрируем старые сейвы: если decorLevels пустой, инициализируем
-    const decorCfg = (BALANCE as any).decor as { id: string }[] | undefined;
+    const decorCfg = BALANCE.decor;
     if (decorCfg) {
       for (const d of decorCfg) {
         if (!(d.id in this.decorLevels)) this.decorLevels[d.id] = 0;

@@ -41,7 +41,50 @@ const DECOR_ICONS: Record<string, string> = {
   cat: 'decor-cat',
 };
 
-export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): DecorHandle {
+/**
+ * Сообщение «куплено и уже стоит на улице»: спрайт, название, уровень и
+ * переход к кварталу. Без него покупка ощущалась как строчка в списке —
+ * игрок не видел, что декор реально появился в мире.
+ */
+function showPlacedBanner(
+  decor: { id: string; name: string; max_level: number },
+  level: number,
+  onShowQuarter?: () => void,
+): void {
+  const banner = el('div', 'placed-banner');
+  const image = el('img');
+  image.src = spriteUrl(DECOR_ICONS[decor.id] ?? 'ui-rep') ?? '';
+  image.alt = decor.name;
+  banner.append(image);
+
+  const text = el('div', 'placed-banner__text');
+  text.append(el('div', 'placed-banner__title', `${decor.name} · уровень ${level}`));
+  text.append(el('div', 'placed-banner__note', 'Уже стоит на улице квартала'));
+  banner.append(text);
+
+  if (onShowQuarter) {
+    const show = el('button', 'button button--small button--rose', 'Посмотреть');
+    show.addEventListener('click', () => {
+      banner.remove();
+      onShowQuarter();
+    });
+    banner.append(show);
+  }
+
+  const close = el('button', 'placed-banner__close', '×');
+  close.addEventListener('click', () => banner.remove());
+  banner.append(close);
+
+  document.body.append(banner);
+  setTimeout(() => banner.remove(), 7000);
+}
+
+export function mountDecor(
+  root: HTMLElement,
+  game: Game,
+  onClose: () => void,
+  onShowQuarter?: () => void,
+): DecorHandle {
   const overlay = el('div', 'quarter');
   overlay.style.background = '#2a2f33';
   const panel = el('div', 'quarter__panel');
@@ -61,12 +104,21 @@ export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): 
   head.append(repStat, close);
 
   const hint = el('div', 'quarter__hint');
-  hint.textContent = 'Декор покупается за репутацию и даёт микро-бонусы. Это не обязаловка, а приятные улучшения квартала.';
+  hint.textContent =
+    'Декор покупается за репутацию. Купленное сразу встаёт на своё место на улице квартала — скамейка у дома, фонарь у лавки, котик там, где ему вздумается лежать.';
+
+  // Переход «купил — посмотрел»: без него декор ощущался списком в меню,
+  // а не частью мира.
+  if (onShowQuarter) {
+    const seeBtn = el('button', 'button button--small button--rose', 'Посмотреть на улице');
+    seeBtn.addEventListener('click', onShowQuarter);
+    hint.append(document.createTextNode(' '), seeBtn);
+  }
 
   const effects = el('div', 'quarter__hint');
   effects.style.cssText = 'background:#FBF6EC;border:1px solid #9DBE9A;border-radius:10px;padding:8px;font-size:12px;';
 
-  const strip = el('div', 'quarter__strip decor__strip');
+  const strip = el('div', 'decor__strip');
 
   panel.append(head, hint, effects, strip);
   overlay.append(panel);
@@ -92,23 +144,17 @@ export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): 
       const cost = game.nextDecorCost(decor.id);
       const isMax = cost === null;
 
-      const tile = el('div', `quarter__tile${isMax ? '' : ''}`);
-      tile.style.cssText += ';padding:12px;';
-      if (isMax) {
-        tile.style.borderColor = '#9DBE9A';
-        tile.style.background = 'linear-gradient(135deg,#FBF6EC,#E8F5E9)';
-      }
+      const tile = el('div', `panel-tile${isMax ? ' panel-tile--max' : ''}`);
 
       const iconId = DECOR_ICONS[decor.id] ?? 'ui-rep';
       const image = el('img');
       image.src = spriteUrl(iconId) ?? '';
       image.alt = decor.name;
-      image.style.height = '80px';
-      if (level === 0) image.style.filter = 'grayscale(0.6) opacity(0.7)';
+      if (level === 0) image.style.filter = 'grayscale(0.65) opacity(0.72)';
 
       tile.append(image);
-      tile.append(el('div', 'quarter__name', `${decor.name} ${level}/${decor.max_level}`));
-      tile.append(el('div', 'quarter__note', decor.description));
+      tile.append(el('div', 'panel-tile__name', `${decor.name} ${level}/${decor.max_level}`));
+      tile.append(el('div', 'panel-tile__note', decor.description));
       tile.append(el('div', 'upgrade__effect', decor.effect));
 
       const row = el('div', 'upgrade__row');
@@ -144,6 +190,8 @@ export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): 
 
             tile.style.animation = 'building-grow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
             setTimeout(() => (tile.style.animation = ''), 600);
+
+            showPlacedBanner(decor, game.decorLevel(decor.id), onShowQuarter);
           }
           render();
         });
@@ -153,10 +201,9 @@ export function mountDecor(root: HTMLElement, game: Game, onClose: () => void): 
       tile.append(row);
 
       // прогресс-бар уровня
-      const lvlBar = el('div', 'quarter__progress');
-      lvlBar.style.cssText = 'height:4px;background:#d5d0c4;border-radius:2px;overflow:hidden;margin-top:6px;';
-      const lvlFill = el('div');
-      lvlFill.style.cssText = `height:100%;background:linear-gradient(90deg,#9DBE9A,#7FA37D);width:${(level / decor.max_level) * 100}%;transition:width 0.4s ease;`;
+      const lvlBar = el('div', 'panel-tile__bar');
+      const lvlFill = el('span');
+      lvlFill.style.width = `${(level / decor.max_level) * 100}%`;
       lvlBar.append(lvlFill);
       tile.append(lvlBar);
 

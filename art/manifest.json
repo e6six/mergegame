@@ -449,6 +449,11 @@
       "id": "ui-sell-basket",
       "name": "Корзина для продажи",
       "subject": "empty wicker basket with an arched handle, with a few golden coins inside, cozy garden style, game UI icon"
+    },
+    {
+      "id": "ui-shop",
+      "name": "Магазин",
+      "subject": "cozy little wooden market stall with a striped cream and dusty rose awning and a small crate of pink flowers on the counter, game UI icon"
     }
   ],
   "decor": [

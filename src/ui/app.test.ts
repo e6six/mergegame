@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Game } from '../core/game';
+import { BALANCE } from '../core/balance';
 import { mountApp } from './app';
 
 /**
@@ -48,6 +49,23 @@ function cells(root: HTMLElement): HTMLElement[] {
 function pointerClick(el: HTMLElement): void {
   el.dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
   el.dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0, bubbles: true }));
+}
+
+/**
+ * Эмодзи в интерфейсе запрещены: пользователь отдельно просил, чтобы всё, что
+ * видит игрок, было нарисовано ассетами (art/sprites) или чистым CSS.
+ * Проверка ловит именно эмодзи-презентацию, не трогая обычные символы вроде
+ * стрелок, галочек и многоточий.
+ */
+const EMOJI = /\p{Emoji_Presentation}/u;
+
+/** Открывает панель по подписи кнопки (квартал, гербарий, декор, магазин). */
+function openPanel(root: HTMLElement, label: string): void {
+  const button = [...root.querySelectorAll('button')].find((b) =>
+    b.textContent?.includes(label),
+  ) as HTMLButtonElement | undefined;
+  expect(button, `кнопка «${label}» не найдена`).toBeDefined();
+  button?.click();
 }
 
 describe('интерфейс', () => {
@@ -169,7 +187,10 @@ describe('интерфейс', () => {
     cells(root)[0].dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, button: 0 }));
     const popup = root.querySelector('.selection');
     expect(popup).not.toBeNull();
-    expect(popup?.textContent).toContain('Перетащи в корзину');
+    // Клик по предмету больше не «только инфо»: в карточке есть кнопка продажи,
+    // а подсказка напоминает про корзину для перетаскивания.
+    expect(popup?.textContent).toContain('корзину');
+    expect(popup?.textContent).toContain('Продать');
 
     // симулируем drag в корзину
     const cell = cells(root)[0];
@@ -230,6 +251,160 @@ describe('интерфейс', () => {
     ) as HTMLButtonElement;
     close.click();
     expect(root.querySelector('.quarter')).toBeNull();
+  });
+
+  it('в интерфейсе нет эмодзи — только спрайты, текст и CSS', () => {
+    const { root, app } = setup();
+    const check = (where: string) => {
+      const html = root.innerHTML;
+      const found = html.match(EMOJI);
+      expect(found, `эмодзи ${found?.[0]} в разметке (${where})`).toBeNull();
+    };
+
+    check('основной экран');
+
+    // Кнопка магазина — со спрайтом ui-shop (раньше был эмодзи 🛒)
+    const shopImg = [...root.querySelectorAll('.button--icon img')].map((n) => n.getAttribute('src'));
+    expect(shopImg.some((src) => src?.includes('ui-shop'))).toBe(true);
+
+    // Каждая панель открывается поверх остальных — проверяем по очереди
+    openPanel(root, 'Гербарий');
+    app.render();
+    check('гербарий');
+    // На закрытых видах спрайт ui-locked, а не символ замка
+    expect(root.querySelector('.herbarium__item--locked img')?.getAttribute('src')).toContain('ui-locked');
+
+    openPanel(root, 'Декор');
+    app.render();
+    check('декор');
+
+    openPanel(root, 'Квартал');
+    app.render();
+    check('квартал');
+  });
+
+  it('в панели декора все 11 видов со своими спрайтами', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Декор');
+    app.render();
+
+    const tiles = [...root.querySelectorAll('.panel-tile')];
+    expect(tiles).toHaveLength(BALANCE.decor.length);
+    for (const tile of tiles) {
+      const src = tile.querySelector('img')?.getAttribute('src') ?? '';
+      // Ни один декор не должен падать на запасную иконку ui-rep:
+      // у всех 11 видов есть собственный сгенерированный спрайт
+      expect(src, `декор без спрайта: ${tile.textContent}`).toContain('decor-');
+    }
+  });
+
+  it('окно магазина без эмодзи', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Магазин');
+    app.render();
+    const found = root.innerHTML.match(EMOJI);
+    expect(found, `эмодзи ${found?.[0]} в магазине`).toBeNull();
+  });
+
+  it('подсказка о переполнении поля ведёт в корзину, а не «клик по предмету»', () => {
+    const { root, game, app } = setup();
+    game.board.openCells = 10;
+    for (let i = 0; i < 9; i += 1) game.board.place({ chainId: 'rose', level: 1 });
+    app.render();
+
+    const relief = root.querySelector('.relief') as HTMLElement;
+    expect(relief).not.toBeNull();
+    expect(relief.textContent).toContain('корзину');
+    expect(relief.textContent).not.toContain('клик по предмету');
+  });
+
+  it('продаёт предмет кнопкой в карточке', () => {
+    const { root, game, app } = setup();
+    game.board.placeAt(0, { chainId: 'rose', level: 3 });
+    app.render();
+
+    pointerClick(cells(root)[0]);
+    const sell = [...root.querySelectorAll('.selection button')].find((b) =>
+      b.textContent?.includes('Продать'),
+    ) as HTMLButtonElement;
+    expect(sell).toBeDefined();
+
+    const coinsBefore = game.coins;
+    sell.click();
+
+    expect(game.board.at(0)).toBeNull();
+    expect(game.coins).toBeGreaterThan(coinsBefore);
+  });
+
+  it('покупка декора ставит его на улицу квартала', () => {
+    const { root, game, app } = setup();
+    game.reputation = 100000;
+    expect(game.buyDecor('bench')).toBe(true);
+    expect(game.buyDecor('cat')).toBe(true);
+
+    // Декор попадает на карту: canvas получает список нарисованных предметов
+    openPanel(root, 'Квартал');
+    app.render();
+    const canvas = root.querySelector('.quarter__canvas') as HTMLCanvasElement;
+    expect(canvas).not.toBeNull();
+    expect(canvas.dataset.decor ?? '').toContain('bench');
+    expect(canvas.dataset.decor ?? '').toContain('cat');
+
+    // И строка состояния рассказывает, сколько декора уже на улице
+    const line = root.querySelector('.quarter__decor-line') as HTMLElement;
+    expect(line.textContent).toContain('декора на улице 2');
+  });
+
+  it('в квартале есть переход «купить — посмотреть на улице»', () => {
+    const { root, app } = setup();
+    openPanel(root, 'Декор');
+    app.render();
+
+    const seeBtn = [...root.querySelectorAll('button')].find((b) =>
+      b.textContent?.includes('Посмотреть на улице'),
+    ) as HTMLButtonElement;
+    expect(seeBtn).toBeDefined();
+
+    seeBtn.click();
+    app.render();
+    expect(root.querySelector('.quarter__canvas')).not.toBeNull();
+  });
+
+  it('доска целиком помещается в отведённое место, а не уезжает наверх', () => {
+    // Регрессия: раньше размер клетки считался от высоты окна с фиксированной
+    // поправкой «на заголовки», и на невысоких экранах доска с генераторами и
+    // корзиной не помещалась — верх доски обрезался.
+    const { root, game, app } = setup();
+    const wrap = root.querySelector('.board-wrap') as HTMLElement;
+    const generators = root.querySelector('.generators') as HTMLElement;
+    const sellZone = root.querySelector('.sell-zone') as HTMLElement;
+
+    Object.defineProperty(wrap, 'clientWidth', { value: 900, configurable: true });
+    Object.defineProperty(wrap, 'clientHeight', { value: 700, configurable: true });
+    Object.defineProperty(generators, 'offsetHeight', { value: 74, configurable: true });
+    Object.defineProperty(sellZone, 'offsetHeight', { value: 64, configurable: true });
+    app.render();
+
+    const board = root.querySelector('.board') as HTMLElement;
+    const cell = parseFloat(board.style.getPropertyValue('--cell'));
+    expect(Number.isFinite(cell)).toBe(true);
+
+    // Доска вместе с рамкой не должна вылезать за контейнер по высоте и ширине
+    const wrapStyle = getComputedStyle(wrap);
+    const boardStyle = getComputedStyle(board);
+    const num = (value: string, fallback: number) => {
+      const parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+    const gap = num(boardStyle.gap, 6);
+    const padY = num(wrapStyle.paddingTop, 20) + num(wrapStyle.paddingBottom, 20);
+    const boardPadY = num(boardStyle.paddingTop, 14) + num(boardStyle.paddingBottom, 14);
+    const boardPadX = num(boardStyle.paddingLeft, 14) + num(boardStyle.paddingRight, 14);
+
+    const boardHeight = cell * game.board.rows + gap * (game.board.rows - 1) + boardPadY;
+    const boardWidth = cell * game.board.cols + gap * (game.board.cols - 1) + boardPadX;
+    expect(boardHeight + padY + generators.offsetHeight + sellZone.offsetHeight).toBeLessThanOrEqual(700);
+    expect(boardWidth).toBeLessThanOrEqual(900);
   });
 
   it('показывает предупреждение о переполнении поля', () => {

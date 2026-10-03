@@ -38,6 +38,37 @@ export interface Balance {
   timing: Record<string, number>;
   upgrades: UpgradeDef[];
   content_schedule: { chains: { id: string; unlock_day: number; role?: string }[] };
+  /** Декор квартала: покупается за репутацию, даёт бонусы к доходу. */
+  decor: DecorDef[];
+  /** Гербарий: бонус за новый вид и за полностью открытую цепочку. */
+  herbarium: {
+    bonus_per_new_species: number;
+    bonus_per_chain_complete: number;
+    bonus_max: number;
+    [key: string]: unknown;
+  };
+  /** Репутация: сколько даёт один заказ. */
+  reputation: {
+    per_order_base: number;
+    per_level_bonus: number;
+    per_item_bonus: number;
+    stale_penalty: number;
+    [key: string]: unknown;
+  };
+}
+
+export interface DecorDef {
+  id: string;
+  name: string;
+  description: string;
+  base_cost: number;
+  cost_growth: number;
+  max_level: number;
+  /** Декор покупается за репутацию, а не за монеты. */
+  cost_currency: 'reputation';
+  effect: string;
+  /** Прибавка за уровень: смысл зависит от вида декора (доход, энергия, редкость). */
+  bonus_per_level: number;
 }
 
 export const BALANCE = balanceJson as unknown as Balance;
